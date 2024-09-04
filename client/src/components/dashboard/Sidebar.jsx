@@ -32,33 +32,33 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
   const [selected, setSelected] = useState(location.pathname);
 
   const menuItems = [
-    { name: "Dashboard", path: "/dash", icon: <FaChartLine /> },
+    { name: "Dashboard", path: "/manager", icon: <FaChartLine /> },
     {
       name: "Users",
-      path: "/dash/user-management",
+      path: "/manager/user-management",
       icon: <FaUsers />,
     },
     {
       name: "Inventory",
-      path: "/dash/inventory-management",
+      path: "/manager/inventory-management",
       icon: <FaBox />,
     },
     {
       name: "Orders",
-      path: "/dash/order-management",
+      path: "/manager/order-management",
       icon: <FaClipboardList />,
     },
     {
       name: "Discount & Offers",
-      path: "/dash/discount-management",
+      path: "/manager/discount-management",
       icon: <FaTags />,
     },
     {
       name: "Sales Forecasting",
-      path: "/dash/sales-forecasting",
+      path: "/manager/sales-forecasting",
       icon: <FaChartLine />,
     },
-    { name: "Profile", path: "/dash/profile", icon: <FaUserCircle /> },
+    { name: "Profile", path: "/manager/profile", icon: <FaUserCircle /> },
   ];
 
   return (
