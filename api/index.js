@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
+import discountRouter from "./routes/discount.route.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -29,6 +30,7 @@ app.listen(3000, () => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/discount", discountRouter);
 // Use OTP routes
 
 app.use((err, req, res, next) => {

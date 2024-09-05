@@ -1,36 +1,44 @@
-// DiscountManagement.js
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-
-const initialDiscounts = [
-  {
-    id: 1,
-    name: "New Year Sale",
-    discount: "20%",
-    startDate: "2024-01-01",
-    endDate: "2024-01-10",
-  },
-  {
-    id: 2,
-    name: "Summer Special",
-    discount: "15%",
-    startDate: "2024-06-01",
-    endDate: "2024-06-30",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import DiscountTable from "../disc&offer/DiscountTable";
+import ItemTable from "../disc&offer/ItemTable";
 
 export default function DiscountManagement() {
-  const [discounts, setDiscounts] = useState(initialDiscounts);
-  const [newDiscount, setNewDiscount] = useState({
-    name: "",
-    discount: "",
-    startDate: "",
-    endDate: "",
-  });
+  const [discounts, setDiscounts] = useState([]);
+  const [activeTab, setActiveTab] = useState("discount"); // State for active tab
 
-  const handleAddDiscount = () => {
+  // Fetch discounts from API when the component mounts
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const response = await fetch("/api/discount/get");
+        if (!response.ok) {
+          throw new Error("Failed to fetch discounts");
+        }
+        const data = await response.json();
+        setDiscounts(data);
+      } catch (error) {
+        console.error("Error fetching discounts:", error);
+      }
+    };
+
+    fetchDiscounts();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  const handleAddDiscount = (newDiscount) => {
     setDiscounts([...discounts, { ...newDiscount, id: discounts.length + 1 }]);
-    setNewDiscount({ name: "", discount: "", startDate: "", endDate: "" });
+  };
+
+  const handleDeleteDiscount = (id) => {
+    setDiscounts(discounts.filter((discount) => discount.id !== id));
+  };
+
+  const handleUpdateDiscount = (discount) => {
+    console.log("Updating discount:", discount);
+  };
+
+  const handleGenerateReport = () => {
+    console.log("Generating report...");
   };
 
   return (
@@ -43,78 +51,74 @@ export default function DiscountManagement() {
       <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
         Discount & Offer Management
       </h1>
-      <div className="bg-SecondaryColor p-8 rounded-lg shadow-md mb-10">
-        <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-          Existing Discounts
-        </h2>
-        <table className="min-w-full bg-PrimaryColor shadow-md rounded">
-          <thead>
-            <tr>
-              <th className="p-4 text-left text-DarkColor">Name</th>
-              <th className="p-4 text-left text-DarkColor">Discount</th>
-              <th className="p-4 text-left text-DarkColor">Start Date</th>
-              <th className="p-4 text-left text-DarkColor">End Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {discounts.map((offer) => (
-              <tr key={offer.id} className="hover:bg-PrimaryColor">
-                <td className="p-4">{offer.name}</td>
-                <td className="p-4">{offer.discount}</td>
-                <td className="p-4">{offer.startDate}</td>
-                <td className="p-4">{offer.endDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      {/* Tabs */}
+      <div className="flex space-x-4 mb-6">
+        <motion.button
+          className={`py-2 px-4 font-semibold rounded-lg ${
+            activeTab === "discount"
+              ? "bg-ExtraDarkColor text-white"
+              : "bg-SecondaryColor text-DarkColor"
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setActiveTab("discount")}
+        >
+          Discount
+        </motion.button>
+        <motion.button
+          className={`py-2 px-4 font-semibold rounded-lg ${
+            activeTab === "offers"
+              ? "bg-ExtraDarkColor text-white"
+              : "bg-SecondaryColor text-DarkColor"
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setActiveTab("offers")}
+        >
+          Offers
+        </motion.button>
       </div>
 
-      <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-          Add New Offer
-        </h2>
-        <div className="flex flex-col space-y-4">
-          <input
-            type="text"
-            placeholder="Offer Name"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.name}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, name: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Discount Percentage"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.discount}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, discount: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.startDate}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, startDate: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.endDate}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, endDate: e.target.value })
-            }
-          />
-          <button
-            className="bg-DarkColor text-white p-3 rounded mt-4 hover:bg-ExtraDarkColor transition"
-            onClick={handleAddDiscount}
-          >
-            Add Offer
-          </button>
-        </div>
+      {/* Tab Content */}
+      <div className="mt-6">
+        <AnimatePresence mode="wait">
+          {activeTab === "discount" && (
+            <motion.div
+              key="discount"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Discount Table and Item Table in Discount Tab */}
+              <DiscountTable
+                discounts={discounts}
+                onAddDiscount={handleAddDiscount}
+                onDelete={handleDeleteDiscount}
+                onUpdate={handleUpdateDiscount}
+                onGenerateReport={handleGenerateReport}
+              />
+              <ItemTable />
+            </motion.div>
+          )}
+
+          {activeTab === "offers" && (
+            <motion.div
+              key="offers"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Add content for Offers tab here */}
+              <h2 className="text-2xl font-bold text-DarkColor mb-4">
+                Offers Content Here
+              </h2>
+              {/* Add your offers table or other content */}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
