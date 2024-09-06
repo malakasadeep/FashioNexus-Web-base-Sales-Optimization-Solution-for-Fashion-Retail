@@ -3,10 +3,14 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
 import discountRouter from "./routes/discount.route.js";
+import productsRouter from "./routes/products.route.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import nodemailer from "nodemailer";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
@@ -29,8 +33,31 @@ app.listen(3000, () => {
   console.log("Server listening on port 3000!!!");
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Destination folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+  },
+});
+
+const upload = multer({ storage });
+
+// Create 'uploads' directory if not exists
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
+// Route to handle image uploads
+app.post("/api/upload", upload.array("images", 3), (req, res) => {
+  const filePaths = req.files.map((file) => `uploads/${file.filename}`);
+  res.json({ filePaths });
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/discount", discountRouter);
+app.use("/api/products", productsRouter);
 // Use OTP routes
 
 app.use((err, req, res, next) => {
