@@ -1,45 +1,30 @@
 import express from "express";
 
-// import {
-//   getInventories,
-//   getInventory,
-//   createInventory,
-//   deleteInventory,
-//   updateInventory,
-//   getInventorySearch,
-// } from "../../../controllers/inventory.controller.js";
+import {
+  getInventories,
+  getInventory,
+  createInventory,
+  deleteInventory,
+  updateInventory,
+  // getInventorySearch,
+} from "../controllers/inventory.controller.js";
 
 const router = express.Router();
 
 //GET all inventories
-// router.get("/", getInventories);
-router.get("/", (req, res) => {
-  res.json({ mssg: "GET all inventories" });
-});
+router.get("/", getInventories);
 
 //GET a single inventory
-// router.get("/:id", getInventory);
-router.get("/:id", (req, res) => {
-  res.json({ mssg: "GET an inventory" });
-});
+router.get("/:id", getInventory);
 
 //POST a new inventory
-// router.post("/add", createInventory);
-router.post("/", (req, res) => {
-  res.json({ mssg: "CREATE an inventory" });
-});
+router.post("/add", createInventory);
 
 //DELETE an inventory
-// router.delete("/:id", deleteInventory);
-router.delete("/:id", (req, res) => {
-  res.json({ mssg: "DELETE an inventory" });
-});
+router.delete("/:id", deleteInventory);
 
 //UPDATE an inventory
-// router.put("/:id", updateInventory);
-router.patch("/:id", (req, res) => {
-  res.json({ mssg: "UPDATE an inventory" });
-});
+router.put("/:id", updateInventory);
 
 //SEARCH
 // router.get("/search/get", getInventorySearch);
