@@ -24,7 +24,7 @@ router.post("/add", createInventory);
 router.delete("/:id", deleteInventory);
 
 //UPDATE an inventory
-router.put("/:id", updateInventory);
+router.patch("/:id", updateInventory);
 
 //SEARCH
 // router.get("/search/get", getInventorySearch);
