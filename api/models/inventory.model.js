@@ -1,7 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 
-const Schema = mongoose.Schema;
-
 const inventorySchema = new Schema({
   ItemName: {
     type: String,
@@ -41,4 +39,5 @@ const inventorySchema = new Schema({
   },
 });
 
-export default mongoose.model("Inventory", inventorySchema);
+const Inventory = mongoose.model("Inventory", inventorySchema);
+export default Inventory;
