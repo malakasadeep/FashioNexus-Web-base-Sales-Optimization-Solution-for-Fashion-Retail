@@ -1,16 +1,24 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductCard({ id, img, name, price, discount }) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/item/${id}`); // Navigate to the item details page
+  };
+
   return (
     <div
       className="h-[370px] 2xl:h-[420px] text-black rounded-xl shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] mb-2 cursor-pointer"
       key={id}
+      onClick={handleCardClick} // Add onClick handler
     >
       <div>
         <img
           src={img}
-          alt="img"
+          alt={name}
           className=" h-56 2xl:h-64 rounded-t-xl w-full"
         />
       </div>

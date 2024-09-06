@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
     "chart.js": "^4.4.4",
+    "file-saver": "^2.0.5",
     "firebase": "^10.13.1",
     "framer-motion": "^11.4.0",
     "notistack": "^3.0.1",
@@ -27,6 +28,8 @@
     "react-select": "^5.8.0",
     "react-slick": "^0.30.2",
     "redux-persist": "^6.0.0",
+    "simplebar": "^6.2.7",
+    "simplebar-react": "^3.2.6",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.12.4"
   },

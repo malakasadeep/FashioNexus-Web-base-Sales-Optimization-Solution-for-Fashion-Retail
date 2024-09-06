@@ -4,7 +4,7 @@ import { FaSearch, FaBell } from "react-icons/fa";
 
 export default function Header() {
   return (
-    <header className="bg-PrimaryColor p-4 flex justify-between items-center">
+    <header className="bg-PrimaryColor pt-4 flex justify-between items-center">
       <div className="flex items-center"></div>
       <div className="flex items-center">
         <FaSearch className="text-DarkColor mr-3" />

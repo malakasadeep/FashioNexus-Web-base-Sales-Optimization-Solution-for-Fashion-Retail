@@ -1,125 +1,179 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import DiscountTable from "../disc&offer/DiscountTable";
 import ItemTable from "../disc&offer/ItemTable";
+import DiscountTable from "../disc&offer/DiscountTable";
 
 export default function DiscountManagement() {
+  const [activeTab, setActiveTab] = useState("discountDashboard"); // State to manage active tab
+  const [showAddDiscount, setShowAddDiscount] = useState(false);
+  const [showAddOffer, setShowAddOffer] = useState(false);
   const [discounts, setDiscounts] = useState([]);
-  const [activeTab, setActiveTab] = useState("discount"); // State for active tab
+  const [offers, setOffers] = useState([]);
 
-  // Fetch discounts from API when the component mounts
-  useEffect(() => {
-    const fetchDiscounts = async () => {
-      try {
-        const response = await fetch("/api/discount/get");
-        if (!response.ok) {
-          throw new Error("Failed to fetch discounts");
-        }
-        const data = await response.json();
-        setDiscounts(data);
-      } catch (error) {
-        console.error("Error fetching discounts:", error);
-      }
-    };
-
-    fetchDiscounts();
-  }, []); // Empty dependency array means this effect runs once on mount
-
-  const handleAddDiscount = (newDiscount) => {
-    setDiscounts([...discounts, { ...newDiscount, id: discounts.length + 1 }]);
+  // Tab content variants for animations
+  const tabVariants = {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
   };
 
-  const handleDeleteDiscount = (id) => {
-    setDiscounts(discounts.filter((discount) => discount.id !== id));
-  };
-
-  const handleUpdateDiscount = (discount) => {
-    console.log("Updating discount:", discount);
-  };
-
-  const handleGenerateReport = () => {
-    console.log("Generating report...");
+  // Function to render the content of the active tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "discountDashboard":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      case "addDiscount":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <ItemTable />
+          </motion.div>
+        );
+      case "existingDiscounts":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <DiscountTable />
+          </motion.div>
+        );
+      case "addOffer":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      case "existingOffers":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <motion.div
-      className="p-10 bg-PrimaryColor min-h-screen"
+      className="p-10 min-h-screen"
+      style={{ backgroundColor: "#f5ebe0" }} // PrimaryColor for background
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
+      <h1
+        className="text-3xl font-bold mb-2"
+        style={{ color: "#a98467" }} // ExtraDarkColor for the main heading
+      >
         Discount & Offer Management
       </h1>
 
-      {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
-        <motion.button
-          className={`py-2 px-4 font-semibold rounded-lg ${
-            activeTab === "discount"
-              ? "bg-ExtraDarkColor text-white"
-              : "bg-SecondaryColor text-DarkColor"
+      {/* Tab Navigation */}
+      <div
+        className="flex space-x-4 border-b-2 mb-4"
+        style={{ borderColor: "#e3d5ca" }} // SecondaryColor for the border
+      >
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "discountDashboard" ? "border-b-4" : "text-gray-500"
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("discount")}
+          style={{
+            borderColor:
+              activeTab === "discountDashboard" ? "#d4a373" : "transparent", // DarkColor for active tab border
+            color: activeTab === "discountDashboard" ? "#d4a373" : "#a98467", // DarkColor for active tab text, ExtraDarkColor for inactive
+          }}
+          onClick={() => setActiveTab("discountDashboard")}
         >
-          Discount
-        </motion.button>
-        <motion.button
-          className={`py-2 px-4 font-semibold rounded-lg ${
-            activeTab === "offers"
-              ? "bg-ExtraDarkColor text-white"
-              : "bg-SecondaryColor text-DarkColor"
+          Dashboard
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "addDiscount" ? "border-b-4" : "text-gray-500"
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("offers")}
+          style={{
+            borderColor:
+              activeTab === "addDiscount" ? "#d4a373" : "transparent",
+            color: activeTab === "addDiscount" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("addDiscount")}
         >
-          Offers
-        </motion.button>
+          Add Discount
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "existingDiscounts" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "existingDiscounts" ? "#d4a373" : "transparent",
+            color: activeTab === "existingDiscounts" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("existingDiscounts")}
+        >
+          Existing Discounts
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "addOffer" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor: activeTab === "addOffer" ? "#d4a373" : "transparent",
+            color: activeTab === "addOffer" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("addOffer")}
+        >
+          Add Offer
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "existingOffers" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "existingOffers" ? "#d4a373" : "transparent",
+            color: activeTab === "existingOffers" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("existingOffers")}
+        >
+          Existing Offers
+        </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="mt-6">
-        <AnimatePresence mode="wait">
-          {activeTab === "discount" && (
-            <motion.div
-              key="discount"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Discount Table and Item Table in Discount Tab */}
-              <DiscountTable
-                discounts={discounts}
-                onAddDiscount={handleAddDiscount}
-                onDelete={handleDeleteDiscount}
-                onUpdate={handleUpdateDiscount}
-                onGenerateReport={handleGenerateReport}
-              />
-              <ItemTable />
-            </motion.div>
-          )}
-
-          {activeTab === "offers" && (
-            <motion.div
-              key="offers"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Add content for Offers tab here */}
-              <h2 className="text-2xl font-bold text-DarkColor mb-4">
-                Offers Content Here
-              </h2>
-              {/* Add your offers table or other content */}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Render Tab Content with Animation */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab} // Ensure that the content changes with the tab
+          variants={tabVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.3 }} // Customize duration for smooth transition
+          className="mt-4"
+        >
+          {renderTabContent()}
+        </motion.div>
+      </AnimatePresence>
     </motion.div>
   );
 }

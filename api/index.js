@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
 import discountRouter from "./routes/discount.route.js";
 import productsRouter from "./routes/products.route.js";
+import orderRouter from "./routes/order.rout.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -11,6 +12,9 @@ import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { getDirname } from "./utils/getDirname.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 dotenv.config();
 
@@ -55,9 +59,14 @@ app.post("/api/upload", upload.array("images", 3), (req, res) => {
   res.json({ filePaths });
 });
 
+const __dirname = dirname(fileURLToPath(import.meta.url)); // Get directory name
+
+app.use("/uploads", express.static(join(__dirname, "uploads")));
+
 app.use("/api/auth", authRouter);
 app.use("/api/discount", discountRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/order", orderRouter);
 // Use OTP routes
 
 app.use((err, req, res, next) => {

@@ -189,24 +189,6 @@ export default function AddFashionProduct() {
 
   return (
     <div className="p-8 min-h-screen bg-[#f5ebe0]">
-      {/* Enhanced Progress Bar */}
-      <div className="relative w-full mb-6">
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className={`bg-green-500 h-2.5 rounded-full transition-all duration-300 ${
-              currentSection === 1 ? "w-1/2" : "w-full"
-            }`}
-          ></div>
-        </div>
-        {/* Step Titles */}
-        <div className="absolute top-[-20px] left-[25%] text-green-700 font-semibold">
-          Product Details
-        </div>
-        <div className="absolute top-[-20px] left-[75%] text-green-700 font-semibold">
-          Supplier Details
-        </div>
-      </div>
-
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -222,13 +204,13 @@ export default function AddFashionProduct() {
           >
             {/* Left Side: Product Details Form */}
             <div className="w-2/3 pr-4">
-              <h2 className="text-2xl font-semibold text-[#d4a373] mb-4">
+              <h2 className="text-2xl font-semibold text-[#775c41] mb-4">
                 Product Details
               </h2>
 
               {/* Name Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Name:</label>
+                <label className="block mb-1 text-[#775c41]">Name:</label>
                 <input
                   type="text"
                   name="name"
@@ -240,7 +222,7 @@ export default function AddFashionProduct() {
 
               {/* Stock Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Stock:</label>
+                <label className="block mb-1 text-[#775c41]">Stock:</label>
                 <input
                   type="number"
                   name="stock"
@@ -252,7 +234,7 @@ export default function AddFashionProduct() {
 
               {/* Unit Price Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Unit Price:</label>
+                <label className="block mb-1 text-[#775c41]">Unit Price:</label>
                 <input
                   type="number"
                   name="unitPrice"
@@ -264,7 +246,7 @@ export default function AddFashionProduct() {
 
               {/* Added Date Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Added Date:</label>
+                <label className="block mb-1 text-[#775c41]">Added Date:</label>
                 <input
                   type="date"
                   name="addedDate"
@@ -276,7 +258,7 @@ export default function AddFashionProduct() {
 
               {/* Category Selection */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Category:</label>
+                <label className="block mb-1 text-[#775c41]">Category:</label>
                 <select
                   name="category"
                   value={productDetails.category}
@@ -305,7 +287,7 @@ export default function AddFashionProduct() {
                   <>
                     {/* Available Sizes */}
                     <div className="mb-4">
-                      <label className="block mb-1 text-[#d4a373]">
+                      <label className="block mb-1 text-[#775c41]">
                         Available Sizes:
                       </label>
                       <input
@@ -338,7 +320,7 @@ export default function AddFashionProduct() {
 
               {/* Available Colors */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">
+                <label className="block mb-1 text-[#775c41]">
                   Available Colors:
                 </label>
                 <SketchPicker
@@ -365,7 +347,7 @@ export default function AddFashionProduct() {
 
               {/* Product Availability */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">
+                <label className="block mb-1 text-[#775c41]">
                   Availability:
                 </label>
                 <select
@@ -380,7 +362,7 @@ export default function AddFashionProduct() {
               </div>
 
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">
+                <label className="block mb-1 text-[#775c41]">
                   Description:
                 </label>
                 <textarea
@@ -396,7 +378,7 @@ export default function AddFashionProduct() {
             <div className="w-1/3 pl-4 flex flex-col justify-between">
               {/* Image Upload */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Images:</label>
+                <label className="block mb-1 text-[#775c41]">Images:</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -442,13 +424,13 @@ export default function AddFashionProduct() {
           >
             {/* Supplier Details Form */}
             <div className="w-2/3 pr-4">
-              <h2 className="text-2xl font-semibold text-[#d4a373] mb-4">
+              <h2 className="text-2xl font-semibold text-[#775c41] mb-4">
                 Supplier Details
               </h2>
 
               {/* Supplier Name Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">
+                <label className="block mb-1 text-[#775c41]">
                   Supplier Name:
                 </label>
                 <input
@@ -462,7 +444,7 @@ export default function AddFashionProduct() {
 
               {/* Contact Number Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Contact No:</label>
+                <label className="block mb-1 text-[#775c41]">Contact No:</label>
                 <input
                   type="text"
                   name="contactNo"
@@ -474,7 +456,7 @@ export default function AddFashionProduct() {
 
               {/* Email Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Email:</label>
+                <label className="block mb-1 text-[#775c41]">Email:</label>
                 <input
                   type="email"
                   name="email"
@@ -486,7 +468,7 @@ export default function AddFashionProduct() {
 
               {/* Address Input */}
               <div className="mb-4">
-                <label className="block mb-1 text-[#d4a373]">Address:</label>
+                <label className="block mb-1 text-[#775c41]">Address:</label>
                 <textarea
                   name="address"
                   value={supplierDetails.address}
