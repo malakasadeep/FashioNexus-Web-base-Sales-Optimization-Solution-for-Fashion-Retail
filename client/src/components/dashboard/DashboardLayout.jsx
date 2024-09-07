@@ -12,6 +12,7 @@ import OrderManagement from "./OrderManagement";
 import DiscountManagement from "./DiscountManagement";
 import SalesForecasting from "./SalesForcasting";
 import Profile from "./Profile";
+import CreateInventory from "../../pages/inventory/CreateInventory";
 
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
@@ -51,6 +52,10 @@ export default function DashboardLayout() {
           <Route
             path="/inventory-management"
             element={<InventoryManagement />}
+          />
+          <Route
+            path="/inventory-management/create"
+            element={<CreateInventory />}
           />
           <Route path="/order-management" element={<OrderManagement />} />
           <Route path="/discount-management" element={<DiscountManagement />} />
