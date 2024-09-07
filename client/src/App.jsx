@@ -8,6 +8,7 @@ import FashionItem from "./pages/order/FashionItem";
 import Cart from "./pages/order/Cart";
 import Checkout from "./pages/order/Checkout";
 import MyOrders from "./pages/order/Myorders";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/checkout" element={<Checkout />} />{" "}
+        <Route path="/profile" element={<Profile />} />
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />

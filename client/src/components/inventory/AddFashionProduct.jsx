@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { SketchPicker } from "react-color";
 import Swal from "sweetalert2"; // Import SweetAlert
-import { storage } from "./../../firebase"; // Firebase storage configuration
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 import "tailwindcss/tailwind.css";
 

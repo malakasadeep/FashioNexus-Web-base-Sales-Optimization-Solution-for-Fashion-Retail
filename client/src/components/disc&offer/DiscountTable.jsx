@@ -27,13 +27,31 @@ const DiscountTable = () => {
 
   // Delete a discount
   const deleteDiscount = async (id) => {
-    try {
-      await axios.delete(`/api/discounts/${id}`);
-      Swal.fire("Deleted!", "The discount has been deleted.", "success");
-      fetchDiscounts(); // Refresh the discount list
-    } catch (error) {
-      console.error("Error deleting discount:", error);
-      Swal.fire("Error!", "There was an error deleting the discount.", "error");
+    // Display confirmation dialog
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    // If the user confirms, proceed with deletion
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/api/discount/delete/${id}`);
+        Swal.fire("Deleted!", "The discount has been deleted.", "success");
+        fetchDiscounts(); // Refresh the discount list
+      } catch (error) {
+        console.error("Error deleting discount:", error);
+        Swal.fire(
+          "Error!",
+          "There was an error deleting the discount.",
+          "error"
+        );
+      }
     }
   };
 

@@ -103,9 +103,11 @@ export default function Navbar() {
                       transition={{ duration: 0.2 }}
                     >
                       <ul className="py-2">
-                        <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
-                          Profile
-                        </li>
+                        <NavLink to="/profile">
+                          <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
+                            Profile
+                          </li>
+                        </NavLink>
                         <NavLink to="/my-orders">
                           <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
                             My Orders
