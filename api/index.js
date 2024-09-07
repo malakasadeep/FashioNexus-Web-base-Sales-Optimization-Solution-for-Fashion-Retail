@@ -10,7 +10,6 @@ import nodemailer from "nodemailer";
 //dewni
 import inventoryRouter from "./routes/inventory.routs.js";
 
-
 dotenv.config();
 
 mongoose
@@ -35,9 +34,7 @@ app.listen(3000, () => {
 app.use("/api/auth", authRouter);
 
 //dewni
-app.use("/api/inventory", inventoryRouter);
-
-
+app.use("/api/inventories", inventoryRouter);
 
 // Use OTP routes
 app.use((err, req, res, next) => {

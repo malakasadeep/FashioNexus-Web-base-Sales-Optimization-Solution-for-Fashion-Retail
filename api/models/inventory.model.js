@@ -5,6 +5,10 @@ const inventorySchema = new Schema({
     type: String,
     required: true,
   },
+  Category: {
+    type: String,
+    required: true,
+  },
   SKU: {
     type: Number,
     required: true,

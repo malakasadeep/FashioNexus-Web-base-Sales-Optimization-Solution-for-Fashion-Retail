@@ -6,7 +6,7 @@ import {
   createInventory,
   deleteInventory,
   updateInventory,
-  // getInventorySearch,
+  getInventorySearch,
 } from "../controllers/inventory.controller.js";
 
 const router = express.Router();
@@ -27,6 +27,6 @@ router.delete("/:id", deleteInventory);
 router.patch("/:id", updateInventory);
 
 //SEARCH
-// router.get("/search/get", getInventorySearch);
+router.get("/search/get", getInventorySearch);
 
 export default router;

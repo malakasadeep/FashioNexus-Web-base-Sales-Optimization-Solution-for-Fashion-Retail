@@ -77,40 +77,41 @@ export const updateInventory = async (req, res) => {
 
 //search
 
-// export const getInventorySearch = async (req, res, next) => {
-//   try {
-//     const limit = parseInt(req.query.limit) || 10;
-//     const startIndex = parseInt(req.query.startIndex) || 0;
+export const getInventorySearch = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = parseInt(req.query.startIndex) || 0;
 
-//     let type = req.query.type;
-//     if (type === undefined || type === "all") {
-//       type = { $in: ["Event", "Activity"] };
-//     }
+    let Category = req.query.Category;
+    if (Category === undefined || Category === "all") {
+      Category = {
+        $in: [
+          "Men's Clothing",
+          "Women's Clothing",
+          "Kids' Clothing",
+          "Accessories",
+          "Footwear",
+        ],
+      };
+    }
 
-//     let location = req.query.location;
-//     if (location === undefined || location === "all") {
-//       location = {
-//         $in: ["Colombo", "Galle", "Kandy", "Jaffna", "Matara", "Negombo"],
-//       };
-//     }
+    const searchTerm = req.query.searchTerm || "";
 
-//     const searchTerm = req.query.searchTerm || "";
+    const sort = req.query.sort || "createdAt";
 
-//     const sort = req.query.sort || "createdAt";
+    const order = req.query.order || "desc";
 
-//     const order = req.query.order || "desc";
+    const events = await Inventory.find({
+      ItemName: { $regex: searchTerm, $options: "i" },
+      Category,
+    })
+      .sort({ [sort]: order })
+      .skip(startIndex)
+      .limit(limit);
 
-//     const events = await Inventory.find({
-//       title: { $regex: searchTerm, $options: "i" },
-//       type,
-//       location,
-//     })
-//       .sort({ [sort]: order })
-//       .skip(startIndex)
-//       .limit(limit);
-
-//     return res.status(200).json(events);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    return res.status(200).json(events);
+  } catch (error) {
+    console.log("err", error);
+    next(error);
+  }
+};
