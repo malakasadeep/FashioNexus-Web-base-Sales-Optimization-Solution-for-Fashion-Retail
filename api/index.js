@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
+import promotionRouter from "./routes/promotion.routes.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -20,6 +21,12 @@ mongoose
 
 const app = express();
 
+//
+app.get("/", (req, res) => {
+  res.json({mssg: "Welcome to the app"})
+})
+
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
@@ -30,6 +37,9 @@ app.listen(3000, () => {
 
 app.use("/api/auth", authRouter);
 // Use OTP routes
+
+//promotion routes
+app.use("/api/promotion",promotionRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

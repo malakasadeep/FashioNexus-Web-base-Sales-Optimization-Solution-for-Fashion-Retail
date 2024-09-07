@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home"; // Import the Home component// Import the Dashboard component
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import PrivateAdmin from "./components/private/PrivateAdmin";
+import AddOffer from "./components/discount&offer/AddOffer";
 
 export default function App() {
   return (
@@ -17,6 +18,9 @@ export default function App() {
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
         </Route>
+
+        {/* Promotion Route */}
+        <Route path="/offers/create" element={<AddOffer/>}></Route>
       </Routes>
     </BrowserRouter>
   );
