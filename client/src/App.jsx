@@ -16,6 +16,7 @@ import CreateInventory from "./pages/inventory/CreateInventory";
 import InventoryTable from "./components/inventory/InventoryTable";
 import UpdateInventory from "./pages/inventory/UpdateInventory";
 import DeleteInventory from "./pages/inventory/DeleteInventory";
+import AddOffer from "./components/discount&offer/AddOffer";
 
 export default function App() {
   return (
@@ -24,12 +25,10 @@ export default function App() {
       <Routes>
         {/* Home Route */}
         <Route path="/" element={<Home />} />
-
         <Route path="/item/:id" element={<FashionItem />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/checkout" element={<Checkout />} />{" "}
-
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
@@ -39,6 +38,8 @@ export default function App() {
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+        {/* Promotion Route */}
+        <Route path="/offers/create" element={<AddOffer />}></Route>
       </Routes>
     </BrowserRouter>
   );
