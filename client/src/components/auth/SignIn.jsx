@@ -52,7 +52,7 @@ export default function SignIn({ onClose, onSignUp }) {
 
       dispatch(signInSuccess(data));
       if (data.ismanager === true) {
-        navigation("/admin/dashboard");
+        navigation("/manager");
       } else {
         navigation("/");
       }
