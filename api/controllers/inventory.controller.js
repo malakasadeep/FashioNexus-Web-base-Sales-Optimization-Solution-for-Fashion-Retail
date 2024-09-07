@@ -82,7 +82,7 @@ export const getInventorySearch = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = parseInt(req.query.startIndex) || 0;
 
-    let Category = req.query.Category;
+    let Category = req.query.category;
     if (Category === undefined || Category === "all") {
       Category = {
         $in: [
@@ -100,7 +100,7 @@ export const getInventorySearch = async (req, res, next) => {
     const sort = req.query.sort || "createdAt";
 
     const order = req.query.order || "desc";
-
+    console.log("cat", Category);
     const events = await Inventory.find({
       ItemName: { $regex: searchTerm, $options: "i" },
       Category,

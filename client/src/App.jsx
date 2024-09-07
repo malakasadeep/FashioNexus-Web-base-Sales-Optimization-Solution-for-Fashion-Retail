@@ -16,9 +16,6 @@ export default function App() {
       <Routes>
         {/* Home Route */}
         <Route path="/" element={<Home />} />
-
-        <Route path="/inventories/create" element={<CreateInventory />} />
-        <Route path="/admin/inventories" element={<InventoryTable />} />
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
