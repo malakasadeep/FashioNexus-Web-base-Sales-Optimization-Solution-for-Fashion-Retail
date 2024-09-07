@@ -21,8 +21,25 @@ function CreateInventory({ currentUser }) {
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
+    // const { name, value } = e.target;
+    // setFormData({ ...formData, [name]: value });
+
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "SupplierContact") {
+      // Validate that SupplierContact contains only digits and has a maximum of 10 digits
+      if (/^\d*$/.test(value) && value.length <= 10) {
+        setFormData({ ...formData, [name]: value });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Input",
+          text: "Supplier Contact must be a number and contain up to 10 digits.",
+        });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -41,6 +58,28 @@ function CreateInventory({ currentUser }) {
     setError(null);
 
     try {
+      if (formData.ReorderLevel <= 0) {
+        // Reorder Level must be greater than zero
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Reorder Level must be greater than zero.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (formData.StockQuantity < 0) {
+        // Stock Quantity must be greater than or equal to zero
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Stock Quantity must be greater than zero.",
+        });
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/inventories/add", {
         method: "POST",
         headers: {
@@ -67,7 +106,7 @@ function CreateInventory({ currentUser }) {
           title: "Success",
           text: "Inventory added successfully",
         });
-        navigate(`/inventory/get/${data._id}`); // Navigate to the newly created inventory item
+        navigate(`/manager/inventory-management`); // Navigate to the newly created inventory item
       }
     } catch (error) {
       setError(error.message);
