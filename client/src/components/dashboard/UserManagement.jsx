@@ -1,6 +1,7 @@
 // UserManagement.js
 import React from "react";
 import { motion } from "framer-motion";
+import AllUsers from "../users/AllUsers";
 
 const users = [
   { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
@@ -18,24 +19,7 @@ export default function UserManagement() {
       <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
         User Management
       </h1>
-      <table className="min-w-full bg-SecondaryColor shadow-md rounded">
-        <thead>
-          <tr>
-            <th className="p-4 text-left text-DarkColor">Name</th>
-            <th className="p-4 text-left text-DarkColor">Email</th>
-            <th className="p-4 text-left text-DarkColor">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="hover:bg-PrimaryColor">
-              <td className="p-4">{user.name}</td>
-              <td className="p-4">{user.email}</td>
-              <td className="p-4">{user.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <AllUsers />
     </motion.div>
   );
 }

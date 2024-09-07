@@ -38,7 +38,7 @@ export default function DashboardLayout() {
 
       {/* Main Content */}
       <motion.main
-        className="p-8 flex-1 ml-0 transition-all"
+        className=" flex-1 ml-0 transition-all"
         variants={contentVariants}
         animate={isOpen ? "open" : "closed"}
       >
