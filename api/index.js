@@ -8,6 +8,9 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import nodemailer from "nodemailer";
 
+//dewni
+import inventoryRouter from "./routes/inventory.routs.js";
+
 dotenv.config();
 
 mongoose
@@ -36,11 +39,13 @@ app.listen(3000, () => {
 });
 
 app.use("/api/auth", authRouter);
-// Use OTP routes
 
 //promotion routes
 app.use("/api/promotion",promotionRouter);
+//dewni
+app.use("/api/inventories", inventoryRouter);
 
+// Use OTP routes
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
