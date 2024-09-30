@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import { SketchPicker } from "react-color";
 import { useNavigate } from "react-router-dom"; // Make sure to use this hook for navigation
+import "tailwindcss/tailwind.css";
 
 function CreateInventory({ currentUser }) {
   const [formData, setFormData] = useState({
     ItemName: "",
     Category: "Men's Clothing",
     SKU: "",
+    Sizes: [],
+    Colors: [],
     description: "",
     StockQuantity: "",
     ReorderLevel: "",
@@ -19,6 +23,8 @@ function CreateInventory({ currentUser }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [sizeInput, setSizeInput] = useState(""); // State to manage size input
+  const [colorInput, setColorInput] = useState(""); // State to manage color input
 
   const handleInputChange = (e) => {
     // const { name, value } = e.target;
@@ -50,6 +56,43 @@ function CreateInventory({ currentUser }) {
       "uploadedImages",
       JSON.stringify([...formData.imageUrls, ...urls])
     ); // Save to local storage
+  };
+
+  // Function to handle size addition
+  const handleAddSize = () => {
+    if (sizeInput && !formData.Sizes.includes(sizeInput)) {
+      setFormData((prevState) => ({
+        ...prevState,
+        Sizes: [...prevState.Sizes, sizeInput],
+      }));
+      setSizeInput(""); // Reset input field
+    }
+  };
+
+  // Function to handle size removal
+  const handleRemoveSize = (size) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      Sizes: prevState.Sizes.filter((s) => s !== size),
+    }));
+  };
+
+  // Function to handle color addition
+  const handleAddColor = (color) => {
+    if (color && !formData.Colors.includes(color.hex)) {
+      setFormData((prevState) => ({
+        ...prevState,
+        Colors: [...prevState.Colors, color.hex],
+      }));
+    }
+  };
+
+  // Function to handle color removal
+  const handleRemoveColor = (color) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      Colors: prevState.Colors.filter((c) => c !== color),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -173,6 +216,80 @@ function CreateInventory({ currentUser }) {
           />
         </div>
 
+        {/* Sizes */}
+        {/* <div className="mb-4">
+          <label className="block text-DarkColor font-medium mb-2">Sizes</label>
+          <select
+            name="Sizes"
+            className="w-full p-2 border border-SecondaryColor rounded"
+            value={formData.Sizes}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="small">S</option>
+            <option value="medium">M</option>
+            <option value="large">L</option>
+            <option value="extra large">XL</option>
+          </select>
+        </div> */}
+
+        {formData.Category !== "Accessories" && formData.Category && (
+          <>
+            {/* Available Sizes */}
+            <div className="mb-4">
+              <label className="block mb-1 text-[#775c41]">
+                Available Sizes:
+              </label>
+              <input
+                type="text"
+                placeholder="Add size and press enter"
+                value={sizeInput}
+                onChange={(e) => setSizeInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddSize()}
+                className="block w-full p-2 border border-gray-300 rounded"
+              />
+              <div className="mt-2">
+                {formData.Sizes.map((size, index) => (
+                  <span
+                    key={index}
+                    className="inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
+                  >
+                    {size}
+                    <button
+                      className="ml-2 text-xs"
+                      onClick={() => handleRemoveSize(size)}
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Colors */}
+        <div className="mb-4">
+          <label className="block mb-1 text-[#775c41]">Available Colors:</label>
+          <SketchPicker color={colorInput} onChangeComplete={handleAddColor} />
+          <div className="mt-2">
+            {formData.Colors.map((color, index) => (
+              <span
+                key={index}
+                className="inline-block w-6 h-6 rounded-full mr-2 mb-2"
+                style={{ backgroundColor: color }}
+              >
+                <button
+                  className="ml-2 text-xs text-white"
+                  onClick={() => handleRemoveColor(color)}
+                >
+                  x
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* Description */}
         <div className="mb-4">
           <label className="block text-DarkColor font-medium mb-2">
@@ -222,14 +339,16 @@ function CreateInventory({ currentUser }) {
           <label className="block text-DarkColor font-medium mb-2">
             Stock Status
           </label>
-          <input
-            type="text"
+          <select
             name="StockStatus"
             className="w-full p-2 border border-SecondaryColor rounded"
             value={formData.StockStatus}
             onChange={handleInputChange}
             required
-          />
+          >
+            <option value="In Stock">In Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+          </select>
         </div>
 
         {/* Supplier Name */}
