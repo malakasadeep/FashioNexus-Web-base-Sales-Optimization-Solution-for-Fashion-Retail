@@ -161,7 +161,7 @@ function CreateInventory({ currentUser }) {
       setLoading(false);
     }
   };
-
+  console.log("form", formData);
   return (
     <div className="max-w-lg mx-auto p-6 mt-10 bg-PrimaryColor rounded-lg shadow-md">
       <h1 className="text-2xl font-bold text-center text-ExtraDarkColor mb-6">
@@ -240,15 +240,41 @@ function CreateInventory({ currentUser }) {
               <label className="block mb-1 text-[#775c41]">
                 Available Sizes:
               </label>
-              <input
+              {["XS", "S", "M", "L"].map((size, index) => (
+                <div className="flex">
+                  <input
+                    key={`chk_bx_${index}`}
+                    type="checkbox"
+                    name={size}
+                    value={size}
+                    id={size}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        Sizes: [...formData.Sizes, e.target.value],
+                      })
+                    }
+                  />
+                  <span
+                    key={`spn_${index}`}
+                    className="mx-2 inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
+                  >
+                    {size}
+                  </span>
+                  {/* <label for={m} className="mx-2">
+                    {m}
+                  </label> */}
+                </div>
+              ))}
+              {/* <input
                 type="text"
                 placeholder="Add size and press enter"
                 value={sizeInput}
                 onChange={(e) => setSizeInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddSize()}
                 className="block w-full p-2 border border-gray-300 rounded"
-              />
-              <div className="mt-2">
+              /> */}
+              {/* <div className="mt-2">
                 {formData.Sizes.map((size, index) => (
                   <span
                     key={index}
@@ -263,7 +289,7 @@ function CreateInventory({ currentUser }) {
                     </button>
                   </span>
                 ))}
-              </div>
+              </div> */}
             </div>
           </>
         )}
