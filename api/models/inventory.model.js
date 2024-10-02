@@ -13,6 +13,10 @@ const inventorySchema = new Schema({
     type: Number,
     required: true,
   },
+  UnitPrice: {
+    type: Number,
+    required: true,
+  },
   Sizes: [String],
   Colors: [String],
   description: {
