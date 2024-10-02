@@ -11,6 +11,7 @@ import {
   signOutUserFailure,
   signOutUserSuccess,
 } from "../redux/user/userSlice";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
@@ -55,11 +56,11 @@ export default function Navbar() {
       <section>
         <div className="flex flex-row justify-between p-5 md:px-32 px-5 bg-PrimaryColor shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
           <div>
-            <Link to="home" spy={true} smooth={true} duration={500}>
+            <NavLink to="/" spy={true} smooth={true} duration={500}>
               <h1 className="text-2xl font-semibold text-ExtraDarkColor cursor-pointer">
                 FashioNexus
               </h1>
-            </Link>
+            </NavLink>
           </div>
 
           {/* Desktop Nav Elements */}
@@ -102,12 +103,16 @@ export default function Navbar() {
                       transition={{ duration: 0.2 }}
                     >
                       <ul className="py-2">
-                        <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
-                          Profile
-                        </li>
-                        <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
-                          My Orders
-                        </li>
+                        <NavLink to="/profile">
+                          <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
+                            Profile
+                          </li>
+                        </NavLink>
+                        <NavLink to="/my-orders">
+                          <li className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor">
+                            My Orders
+                          </li>
+                        </NavLink>
                         <li
                           className="px-4 py-2 hover:bg-SecondaryColor cursor-pointer text-ExtraDarkColor"
                           onClick={handleSignOut}
@@ -126,9 +131,11 @@ export default function Navbar() {
                 onClick={handleSignInClick}
               />
             )}
-            <div className="text-DarkColor relative">
-              <FaShoppingCart size={25} className="cursor-pointer" />
-            </div>
+            <NavLink to="/cart">
+              <div className="text-DarkColor relative">
+                <FaShoppingCart size={25} className="cursor-pointer" />
+              </div>
+            </NavLink>
           </div>
         </div>
 

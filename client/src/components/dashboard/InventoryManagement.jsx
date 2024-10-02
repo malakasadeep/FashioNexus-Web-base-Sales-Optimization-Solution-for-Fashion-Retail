@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { MdInfo } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
@@ -108,7 +109,10 @@ export default function InventoryManagement() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
+      <h1
+        className="text-3xl font-bold mb-2"
+        style={{ color: "#a98467" }} // ExtraDarkColor for the main heading
+      >
         Inventory Management
       </h1>
       <div className="bg-SecondaryColor p-8 rounded-lg shadow-md mb-10">
@@ -279,6 +283,7 @@ export default function InventoryManagement() {
           </tbody>
         </table>
       </div>
+
     </motion.div>
   );
 }

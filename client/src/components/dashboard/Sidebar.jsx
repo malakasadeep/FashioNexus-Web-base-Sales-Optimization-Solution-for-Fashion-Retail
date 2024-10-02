@@ -1,7 +1,6 @@
-// Sidebar.js
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import {
   FaUsers,
   FaBox,
@@ -10,6 +9,13 @@ import {
   FaChartLine,
   FaUserCircle,
 } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
+import { useDispatch } from "react-redux"; // Import useDispatch from react-redux
+import {
+  signOutUserstart,
+  signOutUserSuccess,
+  signOutUserFailure,
+} from "../../redux/user/userSlice"; // Import your auth actions
 
 const sidebarVariants = {
   open: {
@@ -29,15 +35,14 @@ const contentVariants = {
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const location = useLocation();
+  const navigate = useNavigate(); // useNavigate hook for redirecting
+  const dispatch = useDispatch(); // Initialize the dispatch function
   const [selected, setSelected] = useState(location.pathname);
 
+  // Menu items configuration
   const menuItems = [
     { name: "Dashboard", path: "/manager", icon: <FaChartLine /> },
-    {
-      name: "Users",
-      path: "/manager/user-management",
-      icon: <FaUsers />,
-    },
+    { name: "Users", path: "/manager/user-management", icon: <FaUsers /> },
     {
       name: "Inventory",
       path: "/manager/inventory-management",
@@ -60,6 +65,25 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     },
     { name: "Profile", path: "/manager/profile", icon: <FaUserCircle /> },
   ];
+
+  // Logout function
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserstart()); // Start the sign-out process
+      const res = await fetch("/api/auth/signout");
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(signOutUserFailure(data.message)); // Dispatch failure if sign-out fails
+        return;
+      }
+
+      dispatch(signOutUserSuccess(data)); // Dispatch success if sign-out succeeds
+      navigate("/"); // Redirect to the login page after sign-out
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message)); // Dispatch failure on error
+    }
+  };
 
   return (
     <motion.aside
@@ -94,6 +118,18 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               </Link>
             </li>
           ))}
+          {/* LogOut Button */}
+          <li>
+            <button
+              className="flex items-center text-DarkColor p-2 rounded-lg hover:text-ExtraDarkColor hover:bg-DarkColor transition-colors duration-300 w-full"
+              onClick={handleSignOut} // Attach the handleSignOut function here
+            >
+              <span className="mr-3">
+                <IoIosLogOut />
+              </span>
+              LogOut
+            </button>
+          </li>
         </ul>
       </motion.div>
     </motion.aside>

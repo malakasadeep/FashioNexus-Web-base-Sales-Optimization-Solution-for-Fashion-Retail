@@ -2,10 +2,18 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
+import discountRouter from "./routes/discount.route.js";
+import orderRouter from "./routes/order.rout.js";
+import userRouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import nodemailer from "nodemailer";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 //dewni
 import inventoryRouter from "./routes/inventory.routs.js";
@@ -31,7 +39,39 @@ app.listen(3000, () => {
   console.log("Server listening on port 3000!!!");
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Destination folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+  },
+});
+
+const upload = multer({ storage });
+
+// Create 'uploads' directory if not exists
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
+// Route to handle image uploads
+app.post("/api/upload", upload.array("images", 3), (req, res) => {
+  const filePaths = req.files.map((file) => `uploads/${file.filename}`);
+  res.json({ filePaths });
+});
+
+const __dirname = dirname(fileURLToPath(import.meta.url)); // Get directory name
+
+app.use("/uploads", express.static(join(__dirname, "uploads")));
+
 app.use("/api/auth", authRouter);
+
+app.use("/api/user", userRouter);
+app.use("/api/discount", discountRouter);
+app.use("/api/order", orderRouter);
+// Use OTP routes
+
 
 //dewni
 app.use("/api/inventories", inventoryRouter);
@@ -125,9 +165,7 @@ app.post("/api/auth/sendotp", (req, res) => {
       </head>
       <body>
         <div class="container">
-          <div class="logo">
-            <img src="https://firebasestorage.googleapis.com/v0/b/mern-tourism.appspot.com/o/Home-BG%2FLogo14.png?alt=media&token=0a278684-1f9b-42b3-9e3c-a40b9e6141c6" alt="Your Website Logo" />
-          </div>
+          
           <div class="content">
             <p>Dear User,</p>
             <p>Thank you for signing up on Your Website. To complete your registration, please use the following OTP (One Time Password):</p>

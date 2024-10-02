@@ -1,121 +1,179 @@
-// DiscountManagement.js
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-
-const initialDiscounts = [
-  {
-    id: 1,
-    name: "New Year Sale",
-    discount: "20%",
-    startDate: "2024-01-01",
-    endDate: "2024-01-10",
-  },
-  {
-    id: 2,
-    name: "Summer Special",
-    discount: "15%",
-    startDate: "2024-06-01",
-    endDate: "2024-06-30",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import ItemTable from "../disc&offer/ItemTable";
+import DiscountTable from "../disc&offer/DiscountTable";
 
 export default function DiscountManagement() {
-  const [discounts, setDiscounts] = useState(initialDiscounts);
-  const [newDiscount, setNewDiscount] = useState({
-    name: "",
-    discount: "",
-    startDate: "",
-    endDate: "",
-  });
+  const [activeTab, setActiveTab] = useState("discountDashboard"); // State to manage active tab
+  const [showAddDiscount, setShowAddDiscount] = useState(false);
+  const [showAddOffer, setShowAddOffer] = useState(false);
+  const [discounts, setDiscounts] = useState([]);
+  const [offers, setOffers] = useState([]);
 
-  const handleAddDiscount = () => {
-    setDiscounts([...discounts, { ...newDiscount, id: discounts.length + 1 }]);
-    setNewDiscount({ name: "", discount: "", startDate: "", endDate: "" });
+  // Tab content variants for animations
+  const tabVariants = {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
+  };
+
+  // Function to render the content of the active tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "discountDashboard":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      case "addDiscount":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <ItemTable />
+          </motion.div>
+        );
+      case "existingDiscounts":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <DiscountTable />
+          </motion.div>
+        );
+      case "addOffer":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      case "existingOffers":
+        return (
+          <motion.div
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          ></motion.div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <motion.div
-      className="p-10 bg-PrimaryColor min-h-screen"
+      className="p-10 min-h-screen"
+      style={{ backgroundColor: "#f5ebe0" }} // PrimaryColor for background
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
+      <h1
+        className="text-3xl font-bold mb-2"
+        style={{ color: "#a98467" }} // ExtraDarkColor for the main heading
+      >
         Discount & Offer Management
       </h1>
-      <div className="bg-SecondaryColor p-8 rounded-lg shadow-md mb-10">
-        <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-          Existing Discounts
-        </h2>
-        <table className="min-w-full bg-PrimaryColor shadow-md rounded">
-          <thead>
-            <tr>
-              <th className="p-4 text-left text-DarkColor">Name</th>
-              <th className="p-4 text-left text-DarkColor">Discount</th>
-              <th className="p-4 text-left text-DarkColor">Start Date</th>
-              <th className="p-4 text-left text-DarkColor">End Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {discounts.map((offer) => (
-              <tr key={offer.id} className="hover:bg-PrimaryColor">
-                <td className="p-4">{offer.name}</td>
-                <td className="p-4">{offer.discount}</td>
-                <td className="p-4">{offer.startDate}</td>
-                <td className="p-4">{offer.endDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
 
-      <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-          Add New Offer
-        </h2>
-        <div className="flex flex-col space-y-4">
-          <input
-            type="text"
-            placeholder="Offer Name"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.name}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, name: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Discount Percentage"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.discount}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, discount: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.startDate}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, startDate: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            className="p-3 bg-PrimaryColor rounded"
-            value={newDiscount.endDate}
-            onChange={(e) =>
-              setNewDiscount({ ...newDiscount, endDate: e.target.value })
-            }
-          />
-          <button
-            className="bg-DarkColor text-white p-3 rounded mt-4 hover:bg-ExtraDarkColor transition"
-            onClick={handleAddDiscount}
-          >
-            Add Offer
-          </button>
+      {/* Tab Navigation */}
+      <div
+        className="flex space-x-4 border-b-2 mb-4"
+        style={{ borderColor: "#e3d5ca" }} // SecondaryColor for the border
+      >
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "discountDashboard" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "discountDashboard" ? "#d4a373" : "transparent", // DarkColor for active tab border
+            color: activeTab === "discountDashboard" ? "#d4a373" : "#a98467", // DarkColor for active tab text, ExtraDarkColor for inactive
+          }}
+          onClick={() => setActiveTab("discountDashboard")}
+        >
+          Dashboard
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "addDiscount" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "addDiscount" ? "#d4a373" : "transparent",
+            color: activeTab === "addDiscount" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("addDiscount")}
+        >
+          Add Discount
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "existingDiscounts" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "existingDiscounts" ? "#d4a373" : "transparent",
+            color: activeTab === "existingDiscounts" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("existingDiscounts")}
+        >
+          Existing Discounts
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "addOffer" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor: activeTab === "addOffer" ? "#d4a373" : "transparent",
+            color: activeTab === "addOffer" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("addOffer")}
+        >
+          Add Offer
+        </div>
+        <div
+          className={`cursor-pointer px-4 py-2 -mb-1 ${
+            activeTab === "existingOffers" ? "border-b-4" : "text-gray-500"
+          }`}
+          style={{
+            borderColor:
+              activeTab === "existingOffers" ? "#d4a373" : "transparent",
+            color: activeTab === "existingOffers" ? "#d4a373" : "#a98467",
+          }}
+          onClick={() => setActiveTab("existingOffers")}
+        >
+          Existing Offers
         </div>
       </div>
+
+      {/* Render Tab Content with Animation */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab} // Ensure that the content changes with the tab
+          variants={tabVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.3 }} // Customize duration for smooth transition
+          className="mt-4"
+        >
+          {renderTabContent()}
+        </motion.div>
+      </AnimatePresence>
     </motion.div>
   );
 }

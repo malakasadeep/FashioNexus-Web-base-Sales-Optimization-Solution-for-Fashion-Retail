@@ -55,6 +55,7 @@ export default function SignIn({ onClose, onSignUp }) {
         navigation("/manager");
       } else {
         navigation("/");
+        onClose;
       }
 
       Swal.fire({
