@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { SketchPicker } from "react-color";
 import { useNavigate } from "react-router-dom"; // Make sure to use this hook for navigation
+import { MdDeleteForever } from "react-icons/md";
+import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 import {
   getDownloadURL,
@@ -9,12 +11,14 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { app } from "../../firebase";
 
 function CreateInventory({ currentUser }) {
   const [formData, setFormData] = useState({
     ItemName: "",
     Category: "Men's Clothing",
     SKU: "",
+    UnitPrice: "",
     Sizes: [],
     Colors: [],
     description: "",
@@ -31,9 +35,10 @@ function CreateInventory({ currentUser }) {
   const navigate = useNavigate();
   const [sizeInput, setSizeInput] = useState(""); // State to manage size input
   const [colorInput, setColorInput] = useState(""); // State to manage color input
-  const [fileUploadError, setFileUploadError] = useState(false);//A boolean to track if there's an error during file upload.
-  const [filePerc, setFilePerc] = useState(0);// A number to track the upload progress of each file.
-  const [uploading, setUploading] = useState(false);// A boolean to indicate if files are currently being uploaded.
+  const [fileUploadError, setFileUploadError] = useState(false); //A boolean to track if there's an error during file upload.
+  const [filePerc, setFilePerc] = useState(0); // A number to track the upload progress of each file.
+  const [uploading, setUploading] = useState(false); // A boolean to indicate if files are currently being uploaded.
+  const [files, setFiles] = useState([]); // Initialize file state
 
   const handleInputChange = (e) => {
     // const { name, value } = e.target;
@@ -57,14 +62,16 @@ function CreateInventory({ currentUser }) {
     }
   };
 
-  const handleImageSubmit = (e) => { //Handles the submission of images
-    if (files.length > 0 && files.length + formData.imageUrls.length < 4) {//checks if the number of selected files is within the limit
+  const handleImageSubmit = (e) => {
+    //Handles the submission of images
+    if (files.length > 0 && files.length + formData.imageUrls.length < 4) {
+      //checks if the number of selected files is within the limit
       setUploading(true);
       setFileUploadError(false);
       const promises = [];
 
       for (let i = 0; i < files.length; i++) {
-        promises.push(storeImage(files[i]));// Uploads a single image file to Firebase Storage
+        promises.push(storeImage(files[i])); // Uploads a single image file to Firebase Storage
       }
       Promise.all(promises)
         .then((urls) => {
@@ -76,7 +83,8 @@ function CreateInventory({ currentUser }) {
           setUploading(false);
         })
         .catch((err) => {
-          setFileUploadError(//set the max image size to 2MB
+          setFileUploadError(
+            //set the max image size to 2MB
             Swal.fire({
               icon: "error",
               title: "Oops...",
@@ -95,6 +103,41 @@ function CreateInventory({ currentUser }) {
       );
       setUploading(false);
     }
+  };
+
+  const storeImage = async (file) => {
+    //Uploads a single image file to Firebase Storage
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app); //creates a storage reference with a unique filename, uploads the file, and returns the download URL
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, `productImages/${fileName}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setFilePerc(Math.round(progress));
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+
+  const handleremoveImage = (index) => {
+    //Removes an image from the imageUrls array when the user clicks on a remove button
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+    });
   };
 
   // const handleImageUpload = (e) => {
@@ -260,6 +303,20 @@ function CreateInventory({ currentUser }) {
             name="SKU"
             className="w-full p-2 border border-SecondaryColor rounded"
             value={formData.SKU}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        {/* Price */}
+        <div className="mb-4">
+          <label className="block text-DarkColor font-medium mb-2">
+            Unit Price
+          </label>
+          <input
+            type="number"
+            name="UnitPrice"
+            className="w-full p-2 border border-SecondaryColor rounded"
+            value={formData.UnitPrice}
             onChange={handleInputChange}
             required
           />
@@ -457,7 +514,76 @@ function CreateInventory({ currentUser }) {
         </div>
 
         {/* Image Upload */}
-        <div className="mb-4">
+
+        <div className="flex flex-col flex-1 gap-4">
+          <p className="font-semibold">
+            Images:
+            <span className="font-normal text-gray-600 ml-2">
+              The first image will be the cover (max 3)
+            </span>
+          </p>
+          <div className="flex gap-4">
+            <input
+              onChange={(e) => setFiles(e.target.files)}
+              type="file"
+              className="p-3 border border-blue-700 rounded w-full"
+              id="images"
+              accept="image/*"
+              multiple
+            />
+            <button
+              type="button"
+              onClick={handleImageSubmit} //handling image uploads
+              className="p-3 text-blue-700 border border-blue-700 rounded uppercase hover:shadow-xl disabled:opacity-80"
+              disabled={uploading}
+            >
+              {uploading ? "Uploading..." : "Upload"}
+            </button>
+          </div>
+          <p className="text-sm self-center font-semibold">
+            {fileUploadError ? (
+              <span className="text-red-700">Error image upload</span>
+            ) : filePerc > 0 && filePerc < 100 ? (
+              <span className="text-slate-700">{`Uploading ${filePerc}%`}</span>
+            ) : filePerc === 100 ? (
+              <span className="text-green-700">
+                Image upload successfully!!
+              </span>
+            ) : (
+              ""
+            )}
+          </p>
+          {formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((url, index) => (
+              <div
+                key={url}
+                className="flex justify-between p-3 border border-blue-700 items-center"
+              >
+                <img
+                  src={url}
+                  alt="pkg images"
+                  className="w-24 h-24 object-contain rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleremoveImage(index)} // remove uploaded images from the form
+                  className="text-red-700 text-5xl font-extrabold rounded-lg uppercase hover:opacity-60"
+                >
+                  <MdDeleteForever />
+                </button>
+              </div>
+            ))}
+          {/* <div className="flex flex-wrap -mx-3 my-4">
+            <div className="flex items-center justify-center mt-4 container mx-auto">
+              <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
+                Add Event
+              </button>
+            </div>
+          </div> */}
+          {/* {error && <p className="text-red-600">{error}</p>} */}
+        </div>
+
+        {/* <div className="mb-4">
           <label className="block text-DarkColor font-medium mb-2">
             Upload Images
           </label>
@@ -467,7 +593,7 @@ function CreateInventory({ currentUser }) {
             className="w-full p-2 border border-SecondaryColor rounded"
             onChange={handleImageUpload}
           />
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <button
