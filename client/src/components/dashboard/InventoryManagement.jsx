@@ -103,7 +103,7 @@ export default function InventoryManagement() {
 
   return (
     <motion.div
-      className="p-10 bg-PrimaryColor min-h-screen"
+      className=" bg-PrimaryColor min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -159,37 +159,40 @@ export default function InventoryManagement() {
         <table className="min-w-full bg-PrimaryColor shadow-md rounded">
           <thead>
             <tr>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Images
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Item Name
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Category
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Price
+              </td>
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Sizes
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Colors
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Quantity
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Reorder Level
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Stock Status
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Supplier Name
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Supplier Contact
               </td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <td className="text-left px-6 py-2 font-semibold text-DarkColor">
                 Action
               </td>
             </tr>
@@ -197,24 +200,27 @@ export default function InventoryManagement() {
           <tbody>
             {inventories.map((inventory) => (
               <tr key={inventory._id} className="hover:bg-PrimaryColor">
-                {/* Displaying images in the table */}
                 <td className="text-left px-6 py-4 font-normal text-black">
-                  {inventory.Images &&
-                    inventory.Images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt="Inventory Image"
-                        className="w-12 h-12 object-cover mr-2 rounded"
-                      />
-                    ))}
+                  {/* Display the image here */}
+                  {inventory.imageUrls ? (
+                    <img
+                      // src={inventory.imageUrls[0]} // palaweni image eka
+                      src={inventory.imageUrls[inventory.imageUrls?.length - 1]} // anthima image eka
+                      alt={inventory.ItemName}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <span>No Image</span>
+                  )}
                 </td>
-
                 <td className="text-left px-6 py-4 font-normal text-black">
                   {inventory.ItemName}
                 </td>
                 <td className="text-left px-6 py-4 font-normal text-black">
                   {inventory.Category}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  ${inventory.UnitPrice}.00
                 </td>
                 <td className="text-left px-6 py-4 font-normal text-black">
                   {inventory.Sizes}
