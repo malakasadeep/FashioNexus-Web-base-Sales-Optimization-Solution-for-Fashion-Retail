@@ -1,8 +1,6 @@
 // InventoryManagement.js
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import AddFashionProduct from "../inventory/AddFashionProduct";
-import ViewItems from "../inventory/ViewItems";
 
 export default function InventoryManagement() {
   const [activeTab, setActiveTab] = useState("addItem"); // State to manage active tab
@@ -18,7 +16,7 @@ export default function InventoryManagement() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "addItem":
-        return <AddFashionProduct />;
+      // return <AddFashionProduct />;
       case "viewItems":
         return (
           <motion.div
@@ -28,7 +26,7 @@ export default function InventoryManagement() {
             exit="exit"
           >
             {/* Replace with your View Items component */}
-            <ViewItems />
+            {/* <ViewItems /> */}
           </motion.div>
         );
       case "itemOverview":

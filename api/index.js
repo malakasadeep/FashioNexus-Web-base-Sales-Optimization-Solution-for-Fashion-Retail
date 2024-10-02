@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
 import discountRouter from "./routes/discount.route.js";
-import productsRouter from "./routes/products.route.js";
 import orderRouter from "./routes/order.rout.js";
 import userRouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
@@ -66,7 +65,6 @@ app.use("/uploads", express.static(join(__dirname, "uploads")));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/discount", discountRouter);
-app.use("/api/products", productsRouter);
 app.use("/api/order", orderRouter);
 // Use OTP routes
 

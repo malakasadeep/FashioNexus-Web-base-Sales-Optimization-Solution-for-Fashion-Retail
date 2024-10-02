@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
+import AddUserPopup from "./AddUserPopup"; // Import AddUserPopup component
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false); // State to control popup visibility
 
   useEffect(() => {
     fetchUsers();
@@ -91,12 +93,20 @@ const AllUsers = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button
-          onClick={downloadReport}
-          className="bg-[#d4a373] text-white p-2 rounded hover:bg-[#a98467]"
-        >
-          Download Report
-        </button>
+        <div>
+          <button
+            onClick={downloadReport}
+            className="bg-[#d4a373] text-white p-2 rounded hover:bg-[#a98467] mr-2"
+          >
+            Download Report
+          </button>
+          <button
+            onClick={() => setIsAddUserOpen(true)} // Open the Add User popup
+            className="bg-[#d4a373] text-white p-2 rounded hover:bg-[#a98467]"
+          >
+            Add User
+          </button>
+        </div>
       </div>
 
       <table className="w-full bg-[#e3d5ca] rounded-md">
@@ -140,6 +150,13 @@ const AllUsers = () => {
           ))}
         </tbody>
       </table>
+
+      {isAddUserOpen && (
+        <AddUserPopup
+          closePopup={() => setIsAddUserOpen(false)} // Close the popup
+          refreshUsers={fetchUsers} // Refresh user list after adding a new user
+        />
+      )}
     </div>
   );
 };
