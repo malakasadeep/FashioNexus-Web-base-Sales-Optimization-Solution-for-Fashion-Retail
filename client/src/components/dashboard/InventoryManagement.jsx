@@ -160,6 +160,9 @@ export default function InventoryManagement() {
           <thead>
             <tr>
               <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Images
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Item Name
               </td>
               <td className="text-left px-6 py-4 font-semibold text-DarkColor">
@@ -168,7 +171,9 @@ export default function InventoryManagement() {
               <td className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Sizes
               </td>
-              {/* <td className="text-left px-6 py-4 font-semibold text-DarkColor">Colors</td> */}
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Colors
+              </td>
               <td className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Quantity
               </td>
@@ -192,6 +197,19 @@ export default function InventoryManagement() {
           <tbody>
             {inventories.map((inventory) => (
               <tr key={inventory._id} className="hover:bg-PrimaryColor">
+                {/* Displaying images in the table */}
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.Images &&
+                    inventory.Images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt="Inventory Image"
+                        className="w-12 h-12 object-cover mr-2 rounded"
+                      />
+                    ))}
+                </td>
+
                 <td className="text-left px-6 py-4 font-normal text-black">
                   {inventory.ItemName}
                 </td>
@@ -202,6 +220,19 @@ export default function InventoryManagement() {
                   {inventory.Sizes}
                 </td>
                 {/* <td className="text-left px-6 py-4 font-normal text-black">{inventory.Colors}</td> */}
+
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.Colors &&
+                    inventory.Colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-block w-4 h-4 rounded-full mr-2"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      ></span>
+                    ))}
+                </td>
+
                 <td className="text-left px-6 py-4 font-normal text-black">
                   {inventory.StockQuantity}
                 </td>

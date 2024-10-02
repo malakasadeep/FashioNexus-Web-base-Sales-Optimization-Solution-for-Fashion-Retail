@@ -3,6 +3,12 @@ import Swal from "sweetalert2";
 import { SketchPicker } from "react-color";
 import { useNavigate } from "react-router-dom"; // Make sure to use this hook for navigation
 import "tailwindcss/tailwind.css";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 function CreateInventory({ currentUser }) {
   const [formData, setFormData] = useState({
@@ -25,6 +31,9 @@ function CreateInventory({ currentUser }) {
   const navigate = useNavigate();
   const [sizeInput, setSizeInput] = useState(""); // State to manage size input
   const [colorInput, setColorInput] = useState(""); // State to manage color input
+  const [fileUploadError, setFileUploadError] = useState(false);//A boolean to track if there's an error during file upload.
+  const [filePerc, setFilePerc] = useState(0);// A number to track the upload progress of each file.
+  const [uploading, setUploading] = useState(false);// A boolean to indicate if files are currently being uploaded.
 
   const handleInputChange = (e) => {
     // const { name, value } = e.target;
@@ -48,15 +57,55 @@ function CreateInventory({ currentUser }) {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setFormData({ ...formData, imageUrls: [...formData.imageUrls, ...urls] });
-    localStorage.setItem(
-      "uploadedImages",
-      JSON.stringify([...formData.imageUrls, ...urls])
-    ); // Save to local storage
+  const handleImageSubmit = (e) => { //Handles the submission of images
+    if (files.length > 0 && files.length + formData.imageUrls.length < 4) {//checks if the number of selected files is within the limit
+      setUploading(true);
+      setFileUploadError(false);
+      const promises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        promises.push(storeImage(files[i]));// Uploads a single image file to Firebase Storage
+      }
+      Promise.all(promises)
+        .then((urls) => {
+          setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.concat(urls),
+          });
+          setFileUploadError(false);
+          setUploading(false);
+        })
+        .catch((err) => {
+          setFileUploadError(//set the max image size to 2MB
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Image upload failed (2MB max)",
+            })
+          );
+          setUploading(false);
+        });
+    } else {
+      setFileUploadError(
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "You can upload max 6 images",
+        })
+      );
+      setUploading(false);
+    }
   };
+
+  // const handleImageUpload = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const urls = files.map((file) => URL.createObjectURL(file));
+  //   setFormData({ ...formData, imageUrls: [...formData.imageUrls, ...urls] });
+  //   localStorage.setItem(
+  //     "uploadedImages",
+  //     JSON.stringify([...formData.imageUrls, ...urls])
+  //   ); // Save to local storage
+  // };
 
   // Function to handle size addition
   const handleAddSize = () => {
