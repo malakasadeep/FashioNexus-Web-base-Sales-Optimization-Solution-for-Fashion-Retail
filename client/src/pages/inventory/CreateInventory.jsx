@@ -259,7 +259,7 @@ function CreateInventory({ currentUser }) {
       <h1 className="text-2xl font-bold text-center text-ExtraDarkColor mb-6">
         Add Inventory
       </h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex-1 grid-cols-2">
         {/* Item Name */}
         <div className="mb-4">
           <label className="block text-DarkColor font-medium mb-2">
