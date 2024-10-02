@@ -11,6 +11,12 @@ import MyOrders from "./pages/order/Myorders";
 import Profile from "./pages/Profile";
 import PrivateCus from "./components/private/PrivateCus";
 
+//dewni
+import CreateInventory from "./pages/inventory/CreateInventory";
+import InventoryTable from "./components/inventory/InventoryTable";
+import UpdateInventory from "./pages/inventory/UpdateInventory";
+import DeleteInventory from "./pages/inventory/DeleteInventory";
+
 export default function App() {
   return (
     // Single BrowserRouter wrapping the entire application
@@ -18,13 +24,17 @@ export default function App() {
       <Routes>
         {/* Home Route */}
         <Route path="/" element={<Home />} />
+
         <Route path="/item/:id" element={<FashionItem />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/checkout" element={<Checkout />} />{" "}
+
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
+          <Route path="/update/:id*" element={<UpdateInventory />} />
+          <Route path="/update/:id*" element={<DeleteInventory />} />
         </Route>
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />

@@ -15,6 +15,9 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
+//dewni
+import inventoryRouter from "./routes/inventory.routs.js";
+
 dotenv.config();
 
 mongoose
@@ -63,11 +66,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url)); // Get directory name
 app.use("/uploads", express.static(join(__dirname, "uploads")));
 
 app.use("/api/auth", authRouter);
+
 app.use("/api/user", userRouter);
 app.use("/api/discount", discountRouter);
 app.use("/api/order", orderRouter);
 // Use OTP routes
 
+
+//dewni
+app.use("/api/inventories", inventoryRouter);
+
+// Use OTP routes
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
