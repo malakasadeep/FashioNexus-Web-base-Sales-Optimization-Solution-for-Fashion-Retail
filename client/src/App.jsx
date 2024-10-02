@@ -18,6 +18,11 @@ import UpdateInventory from "./pages/inventory/UpdateInventory";
 import DeleteInventory from "./pages/inventory/DeleteInventory";
 import AddOffer from "./components/discount&offer/AddOffer";
 
+//Shadini
+import AddOffer from "./components/discount&offer/AddOffer";
+import UpdateOffer from "./components/discount&offer/UpdateOffer";
+import DeleteOffer from "./components/discount&offer/deleteOffer";
+
 export default function App() {
   return (
     // Single BrowserRouter wrapping the entire application
@@ -40,6 +45,8 @@ export default function App() {
         </Route>
         {/* Promotion Route */}
         <Route path="/offers/create" element={<AddOffer />}></Route>
+        {/* <Route path="/update/:id" element={<UpdateOffer />}></Route> */}
+        {/* <Route path="/update/:id* " element={<DeleteOffer />}></Route> */}
       </Routes>
     </BrowserRouter>
   );

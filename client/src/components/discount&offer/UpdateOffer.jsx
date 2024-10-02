@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function AddOffer() {
+export default function UpdateOffer() {
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     promotionName: "",
     promotionCode: "",
     description: "",
-    promotionType: "Percentage Discount",
+    promotionType: "",
     discountPercentage: "",
     price: "",
     finalPrice: "",
@@ -18,6 +20,8 @@ export default function AddOffer() {
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  //const { offerID } = useParams();
 
   const calculateFinalPrice = (price, discountPercentage) => {
     if (price && discountPercentage) {
@@ -25,6 +29,39 @@ export default function AddOffer() {
     }
     return "";
   };
+
+  useEffect(() => {
+    const fetchOffer = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/api/promotions/${id}`);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to fetch offer details");
+        }
+        setFormData({
+          promotionName: data.promotionName || "",
+          promotionCode: data.promotionCode || "",
+          description: data.description || "",
+          promotionType: data.promotionType || "Percentage Discount",
+          discountPercentage: data.discountPercentage || "",
+          price: data.price || "",
+          finalPrice: data.finalPrice || "",
+          startDate: data.startDate || "",
+          endDate: data.endDate || "",
+          applicableProducts: data.applicableProducts || "",
+          usageLimit: data.usageLimit || "",
+        });
+      } catch (error) {
+        setError(error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `${error.message}`,
+        });
+      }
+    };
+    fetchOffer();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +91,8 @@ export default function AddOffer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -97,8 +136,8 @@ export default function AddOffer() {
       return;
     }
 
-    const response = await fetch("http://localhost:3000/api/promotions", {
-      method: "POST",
+    const response = await fetch(`/api/promotions/${id}`, {
+      method: "PATCH",
       body: JSON.stringify({
         ...formData,
       }),
@@ -115,6 +154,7 @@ export default function AddOffer() {
         title: "Error",
         text: `${data.message}`,
       });
+      return;
     }
     if (response.ok) {
       setFormData({
@@ -134,7 +174,7 @@ export default function AddOffer() {
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Promotion added successfully",
+        text: "Promotion updated successfully",
       });
       navigate("/manager/discount-management");
     }
@@ -143,7 +183,7 @@ export default function AddOffer() {
   return (
     <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-        Add New Offer
+        Update the Offer
       </h2>
 
       <div className="flex justify-center items-center min-h-screen">
@@ -158,6 +198,7 @@ export default function AddOffer() {
                 type="text"
                 placeholder="Offer Name"
                 name="promotionName"
+                value={formData.promotionName}
                 onChange={handleInputChange}
               />
             </div>
@@ -171,6 +212,7 @@ export default function AddOffer() {
                 type="text"
                 placeholder="Offer Code"
                 name="promotionCode"
+                value={formData.promotionCode}
                 onChange={handleInputChange}
               />
             </div>
@@ -183,6 +225,7 @@ export default function AddOffer() {
                 className="mt-2 p-2 border-spacing-1"
                 type="textarea"
                 placeholder="Description"
+                value={formData.description}
                 onChange={handleInputChange}
                 name="description"
               />
@@ -197,6 +240,7 @@ export default function AddOffer() {
                 id="type"
                 className="mt-2 p-2 border-spacing-1"
                 onChange={handleInputChange}
+                value={formData.promotionType}
               >
                 <option value="pDiscount">Percentage Discount</option>
                 <option value="BOGO">Buy One Get One Free</option>
@@ -215,6 +259,7 @@ export default function AddOffer() {
                 placeholder="Discount Percentage"
                 name="discountPercentage"
                 onChange={handleInputChange}
+                value={formData.discountPercentage}
               />
             </div>
 
@@ -256,6 +301,7 @@ export default function AddOffer() {
                 placeholder="dd-mm-yyyy"
                 name="startDate"
                 onChange={handleInputChange}
+                value={formData.startDate}
               />
             </div>
 
@@ -269,6 +315,7 @@ export default function AddOffer() {
                 placeholder="dd-mm-yyyy"
                 name="endDate"
                 onChange={handleInputChange}
+                value={formData.endDate}
               />
             </div>
 
@@ -281,6 +328,7 @@ export default function AddOffer() {
                 id="type"
                 className="mt-2 p-2 border-spacing-1"
                 onChange={handleInputChange}
+                value={formData.applicableProducts}
               >
                 <option value="apparel">Apparel</option>
                 <option value="outerwear">Outerwear</option>
@@ -299,6 +347,7 @@ export default function AddOffer() {
                 placeholder="Usage Limit"
                 name="usageLimit"
                 onChange={handleInputChange}
+                value={formData.usageLimit}
               />
             </div>
 
@@ -306,7 +355,7 @@ export default function AddOffer() {
               type="submit"
               className=" bg-rose-400	p-3 rounded-lg px-8 font-bold text-xl align-middle"
             >
-              Add Offer
+              Update Offer
             </button>
 
             {error && <div className="error">{error}</div>}

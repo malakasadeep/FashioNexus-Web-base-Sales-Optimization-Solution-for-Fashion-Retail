@@ -19,6 +19,9 @@ import { dirname, join } from "path";
 //dewni
 import inventoryRouter from "./routes/inventory.routs.js";
 
+//shadini
+import promotionRouter from "./routes/promotion.routes.js";
+
 dotenv.config();
 
 mongoose
