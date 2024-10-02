@@ -9,8 +9,10 @@ export default function InventoryReport({ inventory }) {
     const doc = new jspdf(); //Creates a new instance of jspdf, which represents a PDF document.
     const tableColumn = [
       //Defines an array tableColumn containing the column headers for the table in the PDF.
+      " ",
       "Item Name",
       "Category",
+      "Price",
       "Sizes",
       "Quantity",
       "Reorder Level",
@@ -28,10 +30,10 @@ export default function InventoryReport({ inventory }) {
           index + 1,
           inventory.ItemName,
           inventory.Category,
+          "$" + inventory.UnitPrice,
           inventory.Sizes,
           inventory.StockQuantity,
           inventory.ReorderLevel,
-          //   "$" + events.price,
           inventory.StockStatus,
           inventory.SupplierName,
           inventory.SupplierContact,
