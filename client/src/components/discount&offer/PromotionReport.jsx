@@ -15,6 +15,8 @@ export default function PromotionReport({ promotions }, { searchData }) {
       "Promotion Code",
       "Promotion Type",
       "Discount Percentage",
+      "Price",
+      "Final Price",
       "Start Date",
       "End Date",
       "Applicable Products",
@@ -32,6 +34,8 @@ export default function PromotionReport({ promotions }, { searchData }) {
           promotion.promotionCode,
           promotion.promotionType,
           promotion.discountPercentage,
+          promotion.price,
+          promotion.finalPrice,
           promotion.startDate,
           promotion.endDate,
           promotion.applicableProducts,
@@ -74,7 +78,7 @@ export default function PromotionReport({ promotions }, { searchData }) {
       head: [tableColumn],
       body: tableRows,
       startY: 50,
-      styles: { fontSize: 10 },
+      styles: { fontSize: 8 },
       headStyles: {
         fillColor: [31, 41, 55],
         textColor: [255, 255, 255],
@@ -82,7 +86,7 @@ export default function PromotionReport({ promotions }, { searchData }) {
       },
     });
 
-    doc.save(`Train-Details-Report_${dateStr}.pdf`);
+    doc.save(`Promotion-Details-Report_${dateStr}.pdf`);
   }
   return (
     <div>
