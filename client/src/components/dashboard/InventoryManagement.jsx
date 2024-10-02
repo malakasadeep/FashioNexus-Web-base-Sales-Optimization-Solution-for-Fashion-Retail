@@ -4,6 +4,8 @@ import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import InventoryReport from "../inventory/InventoryReport";
 
 export default function InventoryManagement() {
   const navigate = useNavigate();
@@ -58,6 +60,10 @@ export default function InventoryManagement() {
     urlParams.set("category", searchData.category);
     const searchQuery = urlParams.toString();
     navigate(`/manager/inventory-management?${searchQuery}`);
+  };
+
+  const handleEdit = (inventoryId) => {
+    navigate(`/update/${inventoryId}`);
   };
 
   const handleDelete = async (inventoryId) => {
@@ -140,6 +146,9 @@ export default function InventoryManagement() {
           >
             Search
           </button>
+          <div className="user--btn">
+            <InventoryReport inventory={inventories} />
+          </div>
           <button
             className="bg-DarkColor text-white p-3 rounded hover:bg-ExtraDarkColor transition"
             onClick={() => navigate("create")}
@@ -150,30 +159,64 @@ export default function InventoryManagement() {
         <table className="min-w-full bg-PrimaryColor shadow-md rounded">
           <thead>
             <tr>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Item Name</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Category</td>
-              {/* <td className="text-left px-6 py-4 font-semibold text-DarkColor">Sizes</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Colors</td> */}
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Quantity</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Reorder Level</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Stock Status</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Supplier Name</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Supplier Contact</td>
-              <td className="text-left px-6 py-4 font-semibold text-DarkColor">Action</td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Item Name
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Category
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Sizes
+              </td>
+              {/* <td className="text-left px-6 py-4 font-semibold text-DarkColor">Colors</td> */}
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Quantity
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Reorder Level
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Stock Status
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Supplier Name
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Supplier Contact
+              </td>
+              <td className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Action
+              </td>
             </tr>
           </thead>
           <tbody>
             {inventories.map((inventory) => (
               <tr key={inventory._id} className="hover:bg-PrimaryColor">
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.ItemName}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.Category}</td>
-                {/* <td className="text-left px-6 py-4 font-normal text-black">{inventory.Sizes}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.Colors}</td> */}
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.StockQuantity}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.ReorderLevel}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.StockStatus}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.SupplierName}</td>
-                <td className="text-left px-6 py-4 font-normal text-black">{inventory.SupplierContact}</td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.ItemName}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.Category}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.Sizes}
+                </td>
+                {/* <td className="text-left px-6 py-4 font-normal text-black">{inventory.Colors}</td> */}
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.StockQuantity}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.ReorderLevel}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.StockStatus}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.SupplierName}
+                </td>
+                <td className="text-left px-6 py-4 font-normal text-black">
+                  {inventory.SupplierContact}
+                </td>
 
                 <td className="">
                   <div className="flex">
@@ -183,10 +226,7 @@ export default function InventoryManagement() {
                     >
                       <MdInfo className="text-2xl" />
                     </Link>
-                    <Link
-                      to={`/admin/inventories/update/${inventory._id}`}
-                      className="btnU"
-                    >
+                    <Link to={`/update/${inventory._id}`} className="btnU">
                       <FaEdit className="text-2xl" />
                     </Link>
                     <button
@@ -205,5 +245,3 @@ export default function InventoryManagement() {
     </motion.div>
   );
 }
-
-
