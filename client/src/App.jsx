@@ -9,6 +9,7 @@ import Cart from "./pages/order/Cart";
 import Checkout from "./pages/order/Checkout";
 import MyOrders from "./pages/order/Myorders";
 import Profile from "./pages/Profile";
+import AddFashionProduct from "./components/inventory/AddFashionProduct";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
+          <Route path="/add" element={<AddFashionProduct />} />
         </Route>
       </Routes>
     </BrowserRouter>
