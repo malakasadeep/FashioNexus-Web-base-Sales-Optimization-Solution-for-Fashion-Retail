@@ -1,7 +1,10 @@
 // DiscountManagement.js
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Route, Routes } from "react-router-dom";
 import AddOffer from "../discount&offer/AddOffer";
+import DiscountTable from "../discount&offer/ExistingDiscounts";
+import UpdateOffer from "../discount&offer/UpdateOffer";
 
 const initialDiscounts = [
   {
@@ -44,8 +47,11 @@ export default function DiscountManagement() {
       <h1 className="text-3xl font-bold text-ExtraDarkColor mb-6">
         Discount & Offer Management
       </h1>
-      <AddOffer/>
-      
+      <Routes>
+        <Route path="/" element={<DiscountTable />} />
+        <Route path="/add" element={<AddOffer />} />
+        <Route path="/update/:id" element={<UpdateOffer />} />
+      </Routes>
     </motion.div>
   );
 }

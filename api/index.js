@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
-import promotionRouter from "./routes/promotion.routes.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -10,6 +9,9 @@ import nodemailer from "nodemailer";
 
 //dewni
 import inventoryRouter from "./routes/inventory.routs.js";
+
+//shadini
+import promotionRouter from "./routes/promotion.routes.js";
 
 dotenv.config();
 
@@ -26,9 +28,8 @@ const app = express();
 
 //
 app.get("/", (req, res) => {
-  res.json({mssg: "Welcome to the app"})
-})
-
+  res.json({ mssg: "Welcome to the app" });
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -41,7 +42,7 @@ app.listen(3000, () => {
 app.use("/api/auth", authRouter);
 
 //promotion routes
-app.use("/api/promotion",promotionRouter);
+app.use("/api/promotions", promotionRouter);
 //dewni
 app.use("/api/inventories", inventoryRouter);
 
