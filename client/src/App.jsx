@@ -8,6 +8,8 @@ import PrivateAdmin from "./components/private/PrivateAdmin";
 //dewni
 import CreateInventory from "./pages/inventory/CreateInventory";
 import InventoryTable from "./components/inventory/InventoryTable";
+import UpdateInventory from "./pages/inventory/UpdateInventory";
+import DeleteInventory from "./pages/inventory/DeleteInventory";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
+          <Route path="/update/:id*" element={<UpdateInventory />} />
+          <Route path="/update/:id*" element={<DeleteInventory />} />
         </Route>
       </Routes>
     </BrowserRouter>
