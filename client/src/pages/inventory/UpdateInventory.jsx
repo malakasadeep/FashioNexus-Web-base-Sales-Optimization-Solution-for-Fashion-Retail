@@ -229,6 +229,16 @@ function UpdateInventory({ currentUser }) {
         return;
       }
 
+      if (formData.UnitPrice <= 0) {
+        //price must be greater than 0. if not display error msj
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Price must be greater than zero.",
+        });
+        return;
+      }
+
       const res = await fetch(`/api/inventories/${id}`, {
         method: "PATCH",
         headers: {
