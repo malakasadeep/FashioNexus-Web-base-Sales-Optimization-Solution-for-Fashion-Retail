@@ -114,7 +114,7 @@ function DiscountTable() {
   return (
     <div
       className="dashboard"
-      style={{ background: "#dde6ed", padding: "20px" }}
+      style={{ background: "#e3d5ca", padding: "20px" }}
     >
       {/* <Sidebar /> */}
       <div className="dashboard--content">
@@ -124,17 +124,17 @@ function DiscountTable() {
               <h1 className="text-2xl font-semibold">Existing Discounts</h1>
             </div>
             <br />
-            <div className="search--line flex items-center justify-between flex-wrap gap-5">
-              <div className="flex items-center gap-3">
+            <div className="search--line flex items-center justify-between gap-5 flex-wrap md:flex-nowrap mb-8">
+              <div className="flex items-center gap-3 flex-grow">
                 <input
                   type="text"
                   placeholder="Search..."
                   onChange={handleChange}
                   id="searchTerm"
-                  className="border p-3 rounded-lg"
+                  className="border p-2 rounded-lg w-full md:w-auto"
                 />
                 <select
-                  className="border border-zinc-950 p-3 rounded-lg bg-slate-200"
+                  className="p-2 rounded-lg text-red-300"
                   name="category"
                   id="category"
                   required
@@ -150,8 +150,15 @@ function DiscountTable() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-5 ">
-                <button className="border border-zinc-950 ">
+              <div className="flex items-center gap-5 flex-grow justify-end">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition text-1xl w-60"
+                >
+                  Search
+                </button>
+
+                <button className="bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 text-rose-400 flex justify-center items-center whitespace-nowrap">
                   <PromotionReport
                     promotions={promotions}
                     searchData={searchData}
@@ -159,14 +166,7 @@ function DiscountTable() {
                 </button>
 
                 <button
-                  onClick={handleSubmit}
-                  className="bg-transparent hover:bg-blue-500 text-blue-900 font-semibold text-2xl hover:text-white border border-blue-900 hover:border-transparent rounded px-10"
-                >
-                  Search
-                </button>
-
-                <button
-                  className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition"
+                  className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition w-40 text-center"
                   onClick={() => navigate("add")}
                 >
                   Add Promotion
