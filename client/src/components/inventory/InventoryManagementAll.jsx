@@ -209,10 +209,10 @@ export default function InventoryManagementAll() {
               <th className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Colors
               </th>
-              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
-                Quantity
-              </td>
-              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+              <th className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Stock Quantity
+              </th>
+              {/* <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Reorder Level
               </td>
               <td className="text-left px-2 py-2 font-semibold text-DarkColor">
@@ -223,7 +223,7 @@ export default function InventoryManagementAll() {
               </td>
               <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Supplier Contact
-              </td>
+              </td> */}
               <td className="text-left px-6 py-2 font-semibold text-DarkColor">
                 Action
               </td>
