@@ -36,6 +36,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderId: { type: String, unique: true },
   createdAt: { type: Date, default: Date.now },
+  status: { type: String, default: "pending" },
 });
 
 const Order = mongoose.model("Order", orderSchema);
