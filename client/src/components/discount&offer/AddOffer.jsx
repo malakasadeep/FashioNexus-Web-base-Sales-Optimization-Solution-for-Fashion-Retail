@@ -1,23 +1,25 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AddOffer() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     promotionName: "",
     promotionCode: "",
     description: "",
-    promotionType: "Percentage Discount",
+    promotionType: "pDiscount",
     discountPercentage: "",
-    price: "",
+    price: location.state.price ?? 0,
     finalPrice: "",
     startDate: "",
     endDate: "",
-    applicableProducts: "",
+    applicableProducts: "apparel",
     usageLimit: "",
   });
+
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   const calculateFinalPrice = (price, discountPercentage) => {
     if (price && discountPercentage) {
@@ -121,13 +123,13 @@ export default function AddOffer() {
         promotionName: "",
         promotionCode: "",
         description: "",
-        promotionType: "Percentage Discount",
+        promotionType: "pDiscount",
         discountPercentage: "",
         price: "",
         finalPrice: "",
         startDate: "",
         endDate: "",
-        applicableProducts: "",
+        applicableProducts: "apparel",
         usageLimit: "",
       });
 
@@ -197,6 +199,7 @@ export default function AddOffer() {
                 id="type"
                 className="mt-2 p-2 border-spacing-1"
                 onChange={handleInputChange}
+                value={formData.promotionType}
               >
                 <option value="pDiscount">Percentage Discount</option>
                 <option value="BOGO">Buy One Get One Free</option>
@@ -223,6 +226,7 @@ export default function AddOffer() {
                 Price
               </label>
               <input
+                value={formData.price}
                 className="mt-2 p-2 border-spacing-1"
                 type="text"
                 placeholder="Price"
@@ -281,6 +285,7 @@ export default function AddOffer() {
                 id="type"
                 className="mt-2 p-2 border-spacing-1"
                 onChange={handleInputChange}
+                value={formData.applicableProducts}
               >
                 <option value="apparel">Apparel</option>
                 <option value="outerwear">Outerwear</option>

@@ -16,6 +16,7 @@ function DiscountTable() {
   });
   const [loading, setLoading] = useState(false);
   const [promotions, setPromotions] = useState([]);
+  const [inventories, setInventories] = useState([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -42,6 +43,24 @@ function DiscountTable() {
 
     fetchPromotions();
   }, [location.search]);
+
+  useEffect(() => {
+    const fetchInventories = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/inventories/search/get`
+        );
+        const data = await res.json();
+        setInventories(data);
+      } catch (error) {
+        console.error("Error fetching inventories:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchInventories();
+  }, []);
 
   const handleChange = (e) => {
     if (e.target.type === "select-one") {
@@ -120,10 +139,6 @@ function DiscountTable() {
       <div className="dashboard--content">
         <div>
           <div className="list--header">
-            <div className="user--title">
-              <h1 className="text-2xl font-semibold">Existing Discounts</h1>
-            </div>
-            <br />
             <div className="search--line flex items-center justify-between gap-5 flex-wrap md:flex-nowrap mb-8">
               <div className="flex items-center gap-3 flex-grow">
                 <input
@@ -164,15 +179,13 @@ function DiscountTable() {
                     searchData={searchData}
                   />
                 </button>
-
-                <button
-                  className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition w-40 text-center"
-                  onClick={() => navigate("add")}
-                >
-                  Add Promotion
-                </button>
               </div>
             </div>
+
+            <div className="user--title">
+              <h1 className="text-2xl font-semibold">Items for Discounts</h1>
+            </div>
+            <br />
 
             <div className="list--container">
               {!loading && promotions.length === 0 && (
@@ -185,8 +198,72 @@ function DiscountTable() {
                   <p className="text-lg w-full text-center">Loading....</p>
                 </div>
               )}
+              <table className="min-w-full bg-PrimaryColor shadow-md rounded my-4">
+                <thead>
+                  <tr>
+                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                      Images
+                    </td>
+                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                      Item Name
+                    </td>
+                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                      Price
+                    </td>
+                    <td className="text-left px-6 py-2 font-semibold text-DarkColor w-1/4">
+                      Action
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inventories.map((inventory) => (
+                    <tr key={inventory._id} className="hover:bg-PrimaryColor">
+                      <td className="text-left px-6 py-4 font-normal text-black">
+                        {/* Display the image here */}
+                        {inventory.imageUrls ? (
+                          <img
+                            src={
+                              inventory.imageUrls[
+                                inventory.imageUrls?.length - 1
+                              ]
+                            }
+                            alt={inventory.ItemName}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <span>No Image</span>
+                        )}
+                      </td>
+                      <td className="text-left px-6 py-4 font-normal text-black">
+                        {inventory.ItemName}
+                      </td>
+                      <td className="text-left px-6 py-4 font-normal text-black">
+                        ${inventory.UnitPrice}.00
+                      </td>
+                      <td>
+                        <button
+                          onClick={() =>
+                            navigate("add", {
+                              state: { price: inventory.UnitPrice },
+                            })
+                          }
+                          className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition text-1xl w-60"
+                        >
+                          Add Discount
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="user--title">
+                <h1 className="text-2xl font-semibold">Existing Discounts</h1>
+              </div>
+              <br />
+
               {!loading && promotions.length > 0 && (
-                <table className="list">
+                <table className="list min-w-full bg-PrimaryColor shadow-md rounded">
                   <tbody>
                     <tr className="font-semibold text-blue-900 text-lg text-center p-4">
                       <td className="px-8">Promotion Name</td>
