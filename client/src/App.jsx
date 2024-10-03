@@ -25,11 +25,6 @@ export default function App() {
         {/* Home Route */}
         <Route path="/" element={<Home />} />
 
-        <Route path="/item/:id" element={<FashionItem />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/my-orders" element={<MyOrders />} />
-        <Route path="/checkout" element={<Checkout />} />{" "}
-
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
@@ -38,6 +33,10 @@ export default function App() {
         </Route>
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/item/:id" element={<FashionItem />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />{" "}
         </Route>
       </Routes>
     </BrowserRouter>
