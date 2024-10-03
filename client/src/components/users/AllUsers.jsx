@@ -205,7 +205,7 @@ const AllUsers = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="p-6 bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41]"
+      className="p-6 bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] rounded-lg"
     >
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <motion.div

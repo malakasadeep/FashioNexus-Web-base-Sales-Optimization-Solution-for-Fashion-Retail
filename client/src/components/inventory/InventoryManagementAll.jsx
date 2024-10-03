@@ -118,12 +118,12 @@ export default function InventoryManagementAll() {
 
   return (
     <motion.div
-      className="min-h-screen bg-PrimaryColor px-6 py-8"
+      className="min-h-screen bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] px-6 py-8 rounded-lg "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="bg-SecondaryColor p-6 rounded-lg shadow-lg">
+      <div className="">
         <motion.h2
           className="text-3xl font-semibold text-DarkColor mb-6"
           initial={{ y: -50 }}
