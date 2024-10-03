@@ -24,7 +24,7 @@ function CreateInventory({ currentUser }) {
     description: "",
     StockQuantity: "",
     ReorderLevel: "",
-    StockStatus: "",
+    StockStatus: "In Stock",
     SupplierName: "",
     SupplierContact: "",
     imageUrls: [],
@@ -215,6 +215,16 @@ function CreateInventory({ currentUser }) {
         return;
       }
 
+      if (formData.UnitPrice <= 0) {
+        //price must be greater than 0. if not display error msj
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Price must be greater than zero.",
+        });
+        return;
+      }
+
       const res = await fetch("/api/inventories/add", {
         method: "POST",
         headers: {
@@ -322,23 +332,6 @@ function CreateInventory({ currentUser }) {
           />
         </div>
 
-        {/* Sizes */}
-        {/* <div className="mb-4">
-          <label className="block text-DarkColor font-medium mb-2">Sizes</label>
-          <select
-            name="Sizes"
-            className="w-full p-2 border border-SecondaryColor rounded"
-            value={formData.Sizes}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="small">S</option>
-            <option value="medium">M</option>
-            <option value="large">L</option>
-            <option value="extra large">XL</option>
-          </select>
-        </div> */}
-
         {formData.Category !== "Accessories" && formData.Category && (
           <>
             {/* Available Sizes */}
@@ -367,35 +360,8 @@ function CreateInventory({ currentUser }) {
                   >
                     {size}
                   </span>
-                  {/* <label for={m} className="mx-2">
-                    {m}
-                  </label> */}
                 </div>
               ))}
-              {/* <input
-                type="text"
-                placeholder="Add size and press enter"
-                value={sizeInput}
-                onChange={(e) => setSizeInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddSize()}
-                className="block w-full p-2 border border-gray-300 rounded"
-              /> */}
-              {/* <div className="mt-2">
-                {formData.Sizes.map((size, index) => (
-                  <span
-                    key={index}
-                    className="inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
-                  >
-                    {size}
-                    <button
-                      className="ml-2 text-xs"
-                      onClick={() => handleRemoveSize(size)}
-                    >
-                      x
-                    </button>
-                  </span>
-                ))}
-              </div> */}
             </div>
           </>
         )}
