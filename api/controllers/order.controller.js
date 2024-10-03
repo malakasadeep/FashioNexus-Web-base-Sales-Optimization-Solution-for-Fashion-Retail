@@ -61,10 +61,33 @@ export const OrderByUser = async (req, res) => {
   }
 };
 
+export const AllOrder = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const deleteOrder = async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.orderId);
     res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const response = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    res.json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
