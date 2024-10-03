@@ -11,7 +11,7 @@ const users = [
 export default function UserManagement() {
   return (
     <motion.div
-      className=" p-10 bg-PrimaryColor min-h-screen"
+      className=" p-10 pl-20 bg-PrimaryColor min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

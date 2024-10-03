@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
+import bcryptjs from "bcryptjs";
 
 import mongoose from "mongoose";
 
@@ -131,8 +132,8 @@ export const addUser = async (req, res) => {
     }
 
     // Hash the password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
 
     // Determine if the user is a manager based on usertype
     const isManager = usertype === "manager";
