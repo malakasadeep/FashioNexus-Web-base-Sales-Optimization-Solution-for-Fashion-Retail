@@ -22,6 +22,11 @@ import AddOffer from "./components/discount&offer/AddOffer";
 import UpdateOffer from "./components/discount&offer/UpdateOffer";
 import DeleteOffer from "./components/discount&offer/deleteOffer";
 
+//Shadini
+import AddOffer from "./components/discount&offer/AddOffer";
+import UpdateOffer from "./components/discount&offer/UpdateOffer";
+import DeleteOffer from "./components/discount&offer/deleteOffer";
+
 export default function App() {
   return (
     // Single BrowserRouter wrapping the entire application
@@ -42,6 +47,7 @@ export default function App() {
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+
         {/* Promotion Route */}
         <Route path="/offers/create" element={<AddOffer />}></Route>
         {/* <Route path="/update/:id" element={<UpdateOffer />}></Route> */}
