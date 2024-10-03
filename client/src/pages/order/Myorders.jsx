@@ -6,6 +6,7 @@ import LoadingSpinner from "../../components/Spinner";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import EditOrderPopup from "./EditOrderPopup";
+import { useSelector } from "react-redux";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -14,12 +15,14 @@ const MyOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [expandedOrders, setExpandedOrders] = useState({});
-  const userId = "user001"; // Replace with dynamic userId
+  const { currentUser } = useSelector((state) => state.user);
+
+  // Replace with dynamic userId
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`/api/order/get/${userId}`);
+        const response = await axios.get(`/api/order/get/${currentUser._id}`);
         setOrders(response.data);
       } catch (error) {
         Swal.fire("Error", "Failed to fetch orders", "error");
@@ -29,7 +32,7 @@ const MyOrders = () => {
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [currentUser._id]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -131,7 +134,17 @@ const MyOrders = () => {
                             {item.title}
                           </p>
                           <p className="text-gray-600">Size: {item.size}</p>
-                          <p className="text-gray-600">Color: {item.color}</p>
+                          <p>
+                            Color:{" "}
+                            <button
+                              style={{
+                                backgroundColor: item.color,
+                                padding: "5px",
+                              }}
+                              className="rounded-full w-5 h-5"
+                            ></button>
+                          </p>{" "}
+                          {/* Display color */}
                         </div>
                       ))}
                     </div>
@@ -157,7 +170,14 @@ const MyOrders = () => {
                             {order.items.map((item) => (
                               <li key={item.itemId} className="text-gray-700">
                                 {item.title} - Size: {item.size} - Color:{" "}
-                                {item.color} - Qty: {item.quantity} - Price: $
+                                <button
+                                  style={{
+                                    backgroundColor: item.color,
+                                    padding: "5px",
+                                  }}
+                                  className="rounded-full w-5 h-5"
+                                ></button>{" "}
+                                - Qty: {item.quantity} - Price: $
                                 {(item.price * item.quantity).toFixed(2)}
                               </li>
                             ))}

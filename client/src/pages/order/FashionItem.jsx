@@ -1,22 +1,45 @@
-// src/pages/FashionItem.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import items from "../../components/disc&offer/items"; // Import fashion item data file
 import ProductCard from "../../layouts/ProductCard"; // Import FashionCard component
 import Slider from "react-slick";
 import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Header from "../../components/dashboard/Header";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useSelector } from "react-redux";
 
 const FashionItem = () => {
   const { id } = useParams();
-  const fashionItem = items.find((item) => item.id === parseInt(id));
+  const [fashionItem, setFashionItem] = useState(null); // Initially null
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(fashionItem.sizes[0]); // Default to first size
-  const [selectedColor, setSelectedColor] = useState(fashionItem.colors[0]); // Default to first color
+  const [selectedSize, setSelectedSize] = useState(""); // Initially empty string
+  const [selectedColor, setSelectedColor] = useState(""); // Initially empty string
+  const { currentUser } = useSelector((state) => state.user);
+
+  // Fetch item data from backend API
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const response = await fetch(`/api/inventories/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch item data.");
+        }
+        const data = await response.json();
+        setFashionItem(data);
+        setSelectedSize(data.Sizes[0] || ""); // Check if sizes exist
+        setSelectedColor(data.Colors[0] || ""); // Check if colors exist
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  }, [id]);
 
   const handleIncrease = () => setQuantity(quantity + 1);
   const handleDecrease = () => {
@@ -25,23 +48,24 @@ const FashionItem = () => {
 
   const handleAddToCart = () => {
     try {
+      // Prepare the cart item object
       const cartItem = {
-        userId: "user001", // Static user ID for demonstration
-        itemId: fashionItem.id,
-        title: fashionItem.name,
-        img: fashionItem.img,
-        price: fashionItem.price,
+        userId: currentUser._id, // User ID from Redux state
+        itemId: id,
+        title: fashionItem.ItemName,
+        img: fashionItem.imageUrls[0],
+        price: fashionItem.UnitPrice,
         quantity,
         size: selectedSize,
-        color: selectedColor.name,
+        color: selectedColor, // Pass the selected color here
       };
 
-      // Save to local storage or send to the backend API
+      // Retrieve existing cart from localStorage
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(cartItem);
-      localStorage.setItem("cart", JSON.stringify(cart));
+      cart.push(cartItem); // Add the new item to the cart
+      localStorage.setItem("cart", JSON.stringify(cart)); // Save updated cart back to localStorage
 
-      // Show success alert box with options using SweetAlert2
+      // Show success alert
       Swal.fire({
         title: "Item added to cart successfully!",
         text: "Would you like to view your cart or add more items?",
@@ -51,10 +75,12 @@ const FashionItem = () => {
         cancelButtonText: "Add More",
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "/cart";
+          window.location.href = "/cart"; // Redirect to cart page
         }
+        console.log("Item added to cart:", cartItem);
       });
     } catch (error) {
+      // Handle errors (e.g., failed to add to cart)
       Swal.fire({
         title: "Error!",
         text: "An error occurred while adding the item to the cart. Please try again.",
@@ -65,9 +91,19 @@ const FashionItem = () => {
   };
 
   const handleSizeChange = (e) => setSelectedSize(e.target.value);
-  const handleColorChange = (color) => setSelectedColor(color);
+  const handleColorChange = (color) => {
+    setSelectedColor(color); // Update the selected color with the clicked color code
+  };
 
-  const recommendedItems = items.filter((item) => item.id !== fashionItem.id);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const recommendedItems = fashionItem.recommendedItems || []; // Assuming the API returns recommended items
 
   const settings = {
     dots: true,
@@ -118,16 +154,16 @@ const FashionItem = () => {
           <div className="w-full lg:w-1/2">
             <img
               className="rounded-xl w-full transition-transform duration-300 transform hover:scale-105"
-              src={fashionItem.img}
-              alt={fashionItem.name}
+              src={fashionItem.imageUrls[0]}
+              alt={fashionItem.ItemName}
             />
           </div>
           <div className="w-full lg:w-1/2 space-y-6">
-            <h1 className="text-4xl font-semibold">{fashionItem.name}</h1>
+            <h1 className="text-4xl font-semibold">{fashionItem.ItemName}</h1>
             <p className="text-lg text-gray-600">{fashionItem.description}</p>
-            <h2 className="text-2xl font-semibold">${fashionItem.price}</h2>
+            <h2 className="text-2xl font-semibold">${fashionItem.UnitPrice}</h2>
             <p className="text-md text-gray-500">
-              Available Stock: {fashionItem.stockCount}
+              Available Stock: {fashionItem.StockQuantity}
             </p>
 
             {/* Size Selector */}
@@ -138,7 +174,7 @@ const FashionItem = () => {
                 onChange={handleSizeChange}
                 className="border border-gray-300 rounded px-3 py-2"
               >
-                {fashionItem.sizes.map((size) => (
+                {fashionItem.Sizes?.map((size) => (
                   <option key={size} value={size}>
                     {size}
                   </option>
@@ -150,16 +186,16 @@ const FashionItem = () => {
             <div className="space-y-2">
               <label className="block text-md font-medium">Select Color:</label>
               <div className="flex space-x-3">
-                {fashionItem.colors.map((color) => (
+                {fashionItem.Colors?.map((color) => (
                   <button
-                    key={color.name}
-                    style={{ backgroundColor: color.code }}
+                    key={color}
+                    style={{ backgroundColor: color }} // Color code as background
                     className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor.name === color.name
+                      selectedColor === color
                         ? "border-black"
                         : "border-transparent"
                     }`}
-                    onClick={() => handleColorChange(color)}
+                    onClick={() => handleColorChange(color)} // Set color on click
                   />
                 ))}
               </div>
@@ -208,9 +244,9 @@ const FashionItem = () => {
               <ProductCard
                 key={item.id}
                 id={item.id}
-                img={item.img}
-                name={item.name}
-                price={item.price}
+                img={item.imageUrls[0]}
+                name={item.ItemName}
+                price={item.UnitPrice}
               />
             ))}
           </Slider>
