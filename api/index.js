@@ -5,7 +5,6 @@ import authRouter from "./routes/auth.routs.js";
 import discountRouter from "./routes/discount.route.js";
 import orderRouter from "./routes/order.rout.js";
 import userRouter from "./routes/user.route.js";
-import promotionRouter from "./routes/promotion.routes.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -86,7 +85,7 @@ app.use("/api/inventories", inventoryRouter);
 
 // Use OTP routes
 //promotion routes
-app.use("/api/promotion", promotionRouter);
+app.use("/api/promotions", promotionRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

@@ -16,7 +16,6 @@ import CreateInventory from "./pages/inventory/CreateInventory";
 import InventoryTable from "./components/inventory/InventoryTable";
 import UpdateInventory from "./pages/inventory/UpdateInventory";
 import DeleteInventory from "./pages/inventory/DeleteInventory";
-import AddOffer from "./components/discount&offer/AddOffer";
 
 //Shadini
 import AddOffer from "./components/discount&offer/AddOffer";
