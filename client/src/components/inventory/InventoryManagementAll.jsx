@@ -224,7 +224,7 @@ export default function InventoryManagementAll() {
               <td className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Supplier Contact
               </td>
-              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+              <td className="text-left px-6 py-2 font-semibold text-DarkColor">
                 Action
               </td>
             </tr>
