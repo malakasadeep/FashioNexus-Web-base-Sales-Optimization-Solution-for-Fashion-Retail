@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import { app } from "../firebase";
 import {
@@ -18,10 +18,10 @@ import {
   signOutUserFailure,
   signOutUserSuccess,
 } from "../redux/user/userSlice";
-import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { FaUserEdit, FaTrash, FaCheckCircle, FaSpinner } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -34,12 +34,6 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
-
-  //firebase storage rules
-  //allow read;
-  //allow write: if
-  //request.resource.size < 2 * 1024 * 1024 &&
-  //request.resource.contentType.matches('image/.*')
 
   useEffect(() => {
     if (file) {
@@ -60,7 +54,6 @@ export default function Profile() {
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setFilePerc(Math.round(progress));
       },
-
       (error) => {
         setFileUploadError(true);
       },
@@ -121,7 +114,7 @@ export default function Profile() {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#d4a373",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
@@ -149,129 +142,128 @@ export default function Profile() {
     });
   };
 
-  const handleSignOut = async () => {
-    try {
-      dispatch(signOutUserstart());
-      const res = await fetch("/api/auth/signout");
-      const data = await res.json();
-      if (data.success === false) {
-        dispatch(signOutUserFailure(data.message));
-        return;
-      }
-      dispatch(signOutUserSuccess(data));
-    } catch (error) {
-      dispatch(signOutUserFailure(data.message));
-    }
-  };
-
   return (
-    <div>
-      <div>
-        <Navbar />
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
 
-      <div className=" mb-12">
-        <div className="p-3 max-w-lg mx-auto bg-white/50 z-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-2xl ">
-          <h1 className="text-3xl font-semibold text-center mt-20 ">Profile</h1>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-            <input
-              onChange={(e) => setFile(e.target.files[0])}
-              type="file"
-              ref={fileRef}
-              hidden
-              accept="image/*"
-            />
-            <img
-              onClick={() => fileRef.current.click()}
-              src={formData.avatar || currentUser.avatar}
-              alt="profile"
-              className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2 transition duration-300 ease-in-out hover:scale-125"
-            />
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex-grow flex items-center justify-center p-6"
+        style={{ backgroundColor: "" }}
+      >
+        <div className="bg-SecondaryColor p-6 rounded-xl mt-20 shadow-xl max-w-lg w-full">
+          <h1
+            className="text-3xl font-bold text-center mb-6"
+            style={{ color: "#a98467" }}
+          >
+            Profile
+          </h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-col items-center">
+              <input
+                onChange={(e) => setFile(e.target.files[0])}
+                type="file"
+                ref={fileRef}
+                hidden
+                accept="image/*"
+              />
+              <motion.img
+                src={formData.avatar || currentUser.avatar}
+                alt="profile"
+                className="rounded-full h-24 w-24 object-cover cursor-pointer mb-2"
+                onClick={() => fileRef.current.click()}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              />
+              <p className="text-sm">
+                {fileUploadError ? (
+                  <span className="text-red-600">Error uploading image</span>
+                ) : filePerc > 0 && filePerc < 100 ? (
+                  <span className="text-gray-600">{`Uploading ${filePerc}%`}</span>
+                ) : filePerc === 100 ? (
+                  <span className="text-green-600">Upload complete!</span>
+                ) : null}
+              </p>
+            </div>
 
-            <p className="text-sm self-center font-semibold">
-              {fileUploadError ? (
-                <span className="text-red-700">Error image upload</span>
-              ) : filePerc > 0 && filePerc < 100 ? (
-                <span className="text-slate-700">{`Uploading ${filePerc}%`}</span>
-              ) : filePerc === 100 ? (
-                <span className="text-green-700">
-                  Image upload successfully!!
-                </span>
-              ) : (
-                ""
-              )}
-            </p>
-            <input
-              type="text"
-              className="border p-3 rounded-lg"
-              id="usertype"
-              defaultValue={currentUser.usertype}
-              onChange={handleChange}
-              readOnly
-            />
-            <div className="flex flex-row ">
+            <div className="grid grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Fitst Name"
                 id="firstname"
-                className="border p-3 rounded-lg w-56"
+                placeholder="First Name"
+                className="border p-3 rounded-lg w-full"
                 defaultValue={currentUser.firstname}
                 onChange={handleChange}
               />
               <input
                 type="text"
-                placeholder="Last Name"
                 id="lastname"
-                className="border p-3 rounded-lg w-56 ml-10 "
+                placeholder="Last Name"
+                className="border p-3 rounded-lg w-full"
                 defaultValue={currentUser.lastname}
                 onChange={handleChange}
               />
             </div>
+
             <input
               type="text"
-              placeholder="Username"
-              className="border p-3 rounded-lg"
               id="username"
+              placeholder="Username"
+              className="border p-3 rounded-lg w-full"
               defaultValue={currentUser.username}
               onChange={handleChange}
             />
+
             <input
               type="email"
-              placeholder="Email"
-              className="border p-3 rounded-lg"
               id="email"
+              placeholder="Email"
+              className="border p-3 rounded-lg w-full"
               defaultValue={currentUser.email}
               onChange={handleChange}
+              readOnly={true}
             />
-            <input
-              type="text"
-              placeholder="Address"
-              className="border p-3 rounded-lg"
-              id="country"
-              defaultValue={currentUser.country}
-              onChange={handleChange}
-            />
-            <button className="bg-slate-700 text-yellow-200 rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-              {loading ? "Loading..." : "update"}
-            </button>
-            <p className="bg-green-700 text-yellow-200 rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 text-center cursor-pointer">
-              Reset Password
-            </p>
 
-            <span
-              onClick={handleDeleteUser}
-              className="bg-red-700 text-yellow-200 rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 cursor-pointer text-center"
+            <button
+              type="submit"
+              className="w-full bg-[#d4a373] text-white p-3 rounded-lg flex items-center justify-center hover:bg-[#a98467] transition duration-300"
+              disabled={loading}
             >
-              Delete account
-            </span>
-          </form>
+              {loading ? (
+                <FaSpinner className="animate-spin mr-2" />
+              ) : (
+                <FaUserEdit className="mr-2" />
+              )}
+              {loading ? "Updating..." : "Update Profile"}
+            </button>
 
-          <p className="text-red-700 mt-5">{error ? error : ""}</p>
-          <p className="text-green-700 mt-5 font-semibold">
-            {updateSuccess ? "User is updated successfully!!" : ""}
-          </p>
+            <motion.div
+              onClick={handleDeleteUser}
+              className="cursor-pointer w-full bg-red-600 text-white p-3 rounded-lg text-center hover:bg-red-700 transition duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaTrash className="mr-2 inline" /> Delete Account
+            </motion.div>
+
+            {updateSuccess && (
+              <p className="text-center text-green-600">
+                <FaCheckCircle className="inline mr-1" /> Profile updated
+                successfully!
+              </p>
+            )}
+
+            {error && (
+              <p className="text-center text-red-600">
+                <FaCheckCircle className="inline mr-1" /> {error}
+              </p>
+            )}
+          </form>
         </div>
-      </div>
+      </motion.div>
+
       <Footer />
     </div>
   );

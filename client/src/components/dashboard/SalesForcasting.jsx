@@ -40,14 +40,14 @@ export default function SalesForcasting() {
 
   return (
     <motion.div
-      className="p-10 min-h-screen"
+      className="p-10 pl-20 min-h-screen"
       style={{ backgroundColor: "#f5ebe0" }} // PrimaryColor for background
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <h1
-        className="text-3xl font-bold mb-2"
+        className="text-4xl font-bold mb-2"
         style={{ color: "#a98467" }} // ExtraDarkColor for the main heading
       >
         Sales Forcasting System

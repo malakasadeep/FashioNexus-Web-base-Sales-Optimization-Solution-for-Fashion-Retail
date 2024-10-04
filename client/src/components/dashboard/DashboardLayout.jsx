@@ -27,12 +27,6 @@ export default function DashboardLayout() {
   return (
     <div className="relative min-h-screen bg-PrimaryColor">
       {/* Toggle Button */}
-      <button
-        className="fixed top-4 left-4 z-50 bg-ExtraDarkColor text-SecondaryColor p-2 rounded-full shadow-md"
-        onClick={toggleSidebar}
-      >
-        <FaBars size={20} />
-      </button>
 
       {/* Sidebar Component */}
       <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />

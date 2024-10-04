@@ -267,8 +267,8 @@ const SalesPrediction = () => {
 
   return (
     <div className="container mx-auto p-4 bg-[#f5ebe0]">
-      <h1 className="text-4xl font-bold mb-6 text-[#a98467]">
-        Sales Prediction System
+      <h1 className="text-2xl font-bold mb-6 text-[#a98467]">
+        Auto Forcasting
       </h1>
 
       {/* Search Bar */}

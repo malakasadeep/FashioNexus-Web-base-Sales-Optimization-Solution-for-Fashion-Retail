@@ -5,6 +5,7 @@ import LoadingSpinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useSelector } from "react-redux";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -13,6 +14,7 @@ const Cart = () => {
   const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
 
   // Load cart items from local storage
   useEffect(() => {
@@ -79,7 +81,7 @@ const Cart = () => {
 
   const handleCheckout = () => {
     const checkoutData = {
-      userId: "user001", // Static user ID for demonstration
+      userId: currentUser._id, // Static user ID for demonstration
       items: cartItems,
       total: subtotal - discount,
     };
@@ -111,7 +113,15 @@ const Cart = () => {
                     <h3 className="text-xl font-semibold">{item.title}</h3>
                     <p className="text-gray-600">Price: ${item.price}</p>
                     <p className="text-gray-600">Size: {item.size}</p>
-                    <p className="text-gray-600">Color: {item.color}</p>
+                    <p className="text-gray-600">
+                      Color:{" "}
+                      <span
+                        style={{ backgroundColor: item.color, padding: "5px" }}
+                      >
+                        {item.color}
+                      </span>
+                    </p>{" "}
+                    {/* Display color */}
                     <div className="flex items-center space-x-4">
                       <button
                         onClick={() => handleDecreaseQuantity(item.itemId)}

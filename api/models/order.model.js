@@ -7,13 +7,12 @@ const orderSchema = new mongoose.Schema({
       itemId: {
         type: String,
         ref: "Item",
-        required: true,
       },
       quantity: { type: Number, required: true },
       price: { type: Number, required: true },
       title: { type: String, required: true },
-      color: { type: String, required: true },
-      size: { type: String, required: true },
+      color: { type: String },
+      size: { type: String },
       img: { type: String, required: true },
     },
   ],
@@ -36,6 +35,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderId: { type: String, unique: true },
   createdAt: { type: Date, default: Date.now },
+  status: { type: String, default: "pending" },
 });
 
 const Order = mongoose.model("Order", orderSchema);
