@@ -18,6 +18,8 @@ export default function AddOffer() {
     promotionType: "pDiscount",
     discountPercentage: "",
     price: location.state?.price ?? 0,
+    itemName: location.state?.name ?? 0,
+    itemId: location.state?.id ?? 0,
     finalPrice: "",
     startDate: "",
     endDate: "",
@@ -177,7 +179,7 @@ export default function AddOffer() {
             <FiArrowLeft className="mr-2" />
           </button>
           <h2 className="text-3xl font-bold text-DarkColor ml-20">
-            Add New Offer
+            Add New Offer for {formData.itemName}
           </h2>
         </div>
 
@@ -269,6 +271,7 @@ export default function AddOffer() {
                   placeholder="Price"
                   name="price"
                   onChange={handleInputChange}
+                  readOnly={true}
                 />
               </div>
 
@@ -280,7 +283,7 @@ export default function AddOffer() {
                   placeholder="Final Price"
                   name="finalPrice"
                   value={formData.finalPrice}
-                  readOnly
+                  readOnly={true}
                 />
               </div>
 
