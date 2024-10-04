@@ -13,6 +13,8 @@ import DiscountManagement from "./DiscountManagement";
 import SalesForecasting from "./SalesForcasting";
 import Profile from "./Profile";
 import CreateInventory from "../../pages/inventory/CreateInventory";
+import AddOffer from "../discount&offer/AddOffer";
+import UpdateOffer from "../discount&offer/UpdateOffer";
 
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
@@ -56,6 +58,8 @@ export default function DashboardLayout() {
             path="/discount-management/*"
             element={<DiscountManagement />}
           />
+          <Route path="/add-discount" element={<AddOffer />} />
+          <Route path="/update-discount/:id" element={<UpdateOffer />} />
           <Route path="/sales-forecasting" element={<SalesForecasting />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
