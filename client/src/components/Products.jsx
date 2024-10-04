@@ -63,7 +63,9 @@ export default function Products() {
     const fetchInventories = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:3000/api/inventories/search/get`);
+        const res = await fetch(
+          `http://localhost:3000/api/inventories/search/get`
+        );
         const data = await res.json();
         setInventories(data);
       } catch (error) {
@@ -93,10 +95,15 @@ export default function Products() {
             <ProductCard
               key={inventory._id}
               id={inventory._id}
-              img={inventory.imageUrls?.[inventory.imageUrls.length - 1] || '/default-img.jpg'}
+              img={
+                inventory.imageUrls?.[inventory.imageUrls.length - 1] ||
+                "/default-img.jpg"
+              }
               name={inventory.ItemName}
               price={inventory.UnitPrice}
-              discount={inventory.Discount ? `${inventory.Discount}% Off` : null}
+              discount={
+                inventory.Discount ? `${inventory.Discount}% Off` : null
+              }
             />
           ))
         )}
