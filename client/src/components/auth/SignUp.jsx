@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { motion } from "framer-motion"; // Import Framer Motion for animations
-import OtpValidationPopup from "./OtpValidationPopup"; // Ensure this component is correctly imported
+import { motion, AnimatePresence } from "framer-motion";
+import { FaEnvelope, FaUser, FaLock, FaTimes, FaSpinner } from "react-icons/fa";
+import OtpValidationPopup from "./OtpValidationPopup";
 
 export default function SignUp({ onClose, onSignIn }) {
   const [formData, setFormData] = useState({
@@ -43,8 +44,8 @@ export default function SignUp({ onClose, onSignIn }) {
   };
 
   const handleSignUpSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from refreshing the page
-    if (!validateForm()) return; // Validation errors will stop here
+    e.preventDefault();
+    if (!validateForm()) return;
 
     try {
       setLoading(true);
@@ -120,7 +121,7 @@ export default function SignUp({ onClose, onSignIn }) {
           "Your profile was created successfully!",
           "success"
         ).then(() => {
-          onClose(); // Close modal only on success
+          onClose();
           onSignIn();
         });
         setIsOtpModalOpen(false);
@@ -135,87 +136,101 @@ export default function SignUp({ onClose, onSignIn }) {
     }
   };
 
+  const inputFields = [
+    { name: "email", type: "email", placeholder: "Email", icon: FaEnvelope },
+    { name: "username", type: "text", placeholder: "Username", icon: FaUser },
+    {
+      name: "password",
+      type: "password",
+      placeholder: "Password",
+      icon: FaLock,
+    },
+    {
+      name: "repeatPassword",
+      type: "password",
+      placeholder: "Repeat Password",
+      icon: FaLock,
+    },
+  ];
+
   return (
-    <motion.div
-      className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <AnimatePresence>
       <motion.div
-        className="bg-SecondaryColor p-8 rounded-lg shadow-lg w-1/3 relative"
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -50, opacity: 0 }}
+        className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-black transition duration-200"
+        <motion.div
+          className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md relative"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -50, opacity: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          &times;
-        </button>
-        <h2 className="text-2xl font-semibold text-ExtraDarkColor mb-5">
-          Sign Up
-        </h2>
-        <form onSubmit={handleSignUpSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          <input
-            type="password"
-            name="repeatPassword"
-            placeholder="Repeat Password"
-            value={formData.repeatPassword}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          <div className="">
-            <button
-              className={`w-full p-2 mt-3 rounded ${
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="absolute top-2 right-2 text-gray-600 hover:text-black transition duration-200"
+          >
+            <FaTimes size={24} />
+          </motion.button>
+          <h2 className="text-3xl font-bold text-DarkColor mb-6 text-center">
+            Sign Up
+          </h2>
+          <form onSubmit={handleSignUpSubmit} className="space-y-4">
+            {inputFields.map((field) => (
+              <div key={field.name} className="relative">
+                <field.icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type={field.type}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-DarkColor transition duration-300"
+                />
+              </div>
+            ))}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-full p-3 rounded-md ${
                 loading
                   ? "bg-gray-500 cursor-not-allowed"
                   : "bg-DarkColor hover:bg-DarkColor-dark"
-              } text-white`}
+              } text-white font-semibold transition duration-300 flex items-center justify-center`}
               type="submit"
               disabled={loading}
             >
-              {loading ? "Loading..." : "Sign Up"}
-            </button>
-
-            <p className="mt-5 text-center">
-              Already have an account?{" "}
-              <span
-                onClick={onSignIn}
-                className="text-DarkColor cursor-pointer hover:underline"
-              >
-                Sign In
-              </span>
-            </p>
-          </div>
-        </form>
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin mr-2" />
+                  Signing Up...
+                </>
+              ) : (
+                "Sign Up"
+              )}
+            </motion.button>
+          </form>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 text-center text-gray-600"
+          >
+            Already have an account?{" "}
+            <motion.span
+              whileHover={{ scale: 1.05 }}
+              onClick={onSignIn}
+              className="text-DarkColor cursor-pointer hover:underline font-semibold"
+            >
+              Sign In
+            </motion.span>
+          </motion.p>
+        </motion.div>
       </motion.div>
       {isOtpModalOpen && (
         <OtpValidationPopup
@@ -223,6 +238,6 @@ export default function SignUp({ onClose, onSignIn }) {
           onVerifyOtp={handleVerifyOtp}
         />
       )}
-    </motion.div>
+    </AnimatePresence>
   );
 }

@@ -1,47 +1,103 @@
-// src/pages/FashionItem.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import items from "../../components/disc&offer/items"; // Import fashion item data file
-import ProductCard from "../../layouts/ProductCard"; // Import FashionCard component
+import ProductCard from "../../layouts/ProductCard";
 import Slider from "react-slick";
 import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Header from "../../components/dashboard/Header";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useSelector } from "react-redux";
+import { TailSpin } from "react-loader-spinner";
 
 const FashionItem = () => {
-  const { id } = useParams();
-  const fashionItem = items.find((item) => item.id === parseInt(id));
-  const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(fashionItem.sizes[0]); // Default to first size
-  const [selectedColor, setSelectedColor] = useState(fashionItem.colors[0]); // Default to first color
+  const { id } = useParams(); // Get item ID from URL parameters
+  const { currentUser } = useSelector((state) => state.user); // Get user from Redux
 
+  // State hooks
+  const [fashionItem, setFashionItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [inventories, setInventories] = useState([]);
+
+  // Fetch item data from backend API
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const response = await fetch(`/api/inventories/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch item data.");
+        }
+        const data = await response.json();
+        setFashionItem(data);
+        setSelectedSize(data.Sizes[0] || "");
+        setSelectedColor(data.Colors[0] || "");
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  }, [id]);
+
+  // Fetch recommended inventories
+  useEffect(() => {
+    const fetchInventories = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/inventories/search/get?limit=4` // Limiting the results
+        );
+        const data = await res.json();
+        setInventories(data);
+      } catch (error) {
+        console.error("Error fetching inventories:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchInventories();
+  }, []);
+
+  // Handle quantity changes
   const handleIncrease = () => setQuantity(quantity + 1);
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
+  // Handle add to cart
   const handleAddToCart = () => {
+    if (!currentUser) {
+      Swal.fire({
+        title: "Please log in",
+        text: "You need to log in to add items to the cart.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     try {
       const cartItem = {
-        userId: "user001", // Static user ID for demonstration
-        itemId: fashionItem.id,
-        title: fashionItem.name,
-        img: fashionItem.img,
-        price: fashionItem.price,
+        userId: currentUser._id,
+        itemId: id,
+        title: fashionItem.ItemName,
+        img: fashionItem.imageUrls[0],
+        price: fashionItem.UnitPrice,
         quantity,
         size: selectedSize,
-        color: selectedColor.name,
+        color: selectedColor,
       };
 
-      // Save to local storage or send to the backend API
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
       cart.push(cartItem);
       localStorage.setItem("cart", JSON.stringify(cart));
 
-      // Show success alert box with options using SweetAlert2
       Swal.fire({
         title: "Item added to cart successfully!",
         text: "Would you like to view your cart or add more items?",
@@ -64,11 +120,22 @@ const FashionItem = () => {
     }
   };
 
+  // Handle size and color changes
   const handleSizeChange = (e) => setSelectedSize(e.target.value);
   const handleColorChange = (color) => setSelectedColor(color);
 
-  const recommendedItems = items.filter((item) => item.id !== fashionItem.id);
+  // If loading or error occurs, return appropriate messages
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#a98467" ariaLabel="loading" />
+      </div>
+    );
+  }
 
+  if (error) return <div>Error: {error}</div>;
+
+  // Slider settings
   const settings = {
     dots: true,
     infinite: true,
@@ -118,16 +185,16 @@ const FashionItem = () => {
           <div className="w-full lg:w-1/2">
             <img
               className="rounded-xl w-full transition-transform duration-300 transform hover:scale-105"
-              src={fashionItem.img}
-              alt={fashionItem.name}
+              src={fashionItem.imageUrls[0]}
+              alt={fashionItem.ItemName}
             />
           </div>
           <div className="w-full lg:w-1/2 space-y-6">
-            <h1 className="text-4xl font-semibold">{fashionItem.name}</h1>
+            <h1 className="text-4xl font-semibold">{fashionItem.ItemName}</h1>
             <p className="text-lg text-gray-600">{fashionItem.description}</p>
-            <h2 className="text-2xl font-semibold">${fashionItem.price}</h2>
+            <h2 className="text-2xl font-semibold">${fashionItem.UnitPrice}</h2>
             <p className="text-md text-gray-500">
-              Available Stock: {fashionItem.stockCount}
+              Available Stock: {fashionItem.StockQuantity}
             </p>
 
             {/* Size Selector */}
@@ -138,7 +205,7 @@ const FashionItem = () => {
                 onChange={handleSizeChange}
                 className="border border-gray-300 rounded px-3 py-2"
               >
-                {fashionItem.sizes.map((size) => (
+                {fashionItem.Sizes?.map((size) => (
                   <option key={size} value={size}>
                     {size}
                   </option>
@@ -150,12 +217,12 @@ const FashionItem = () => {
             <div className="space-y-2">
               <label className="block text-md font-medium">Select Color:</label>
               <div className="flex space-x-3">
-                {fashionItem.colors.map((color) => (
+                {fashionItem.Colors?.map((color) => (
                   <button
-                    key={color.name}
-                    style={{ backgroundColor: color.code }}
+                    key={color}
+                    style={{ backgroundColor: color }}
                     className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor.name === color.name
+                      selectedColor === color
                         ? "border-black"
                         : "border-transparent"
                     }`}
@@ -204,13 +271,14 @@ const FashionItem = () => {
             Recommended for You
           </h2>
           <Slider {...settings}>
-            {recommendedItems.map((item) => (
+            {inventories.map((item) => (
               <ProductCard
-                key={item.id}
-                id={item.id}
-                img={item.img}
-                name={item.name}
-                price={item.price}
+                key={item._id}
+                id={item._id}
+                img={item.imageUrls[0]}
+                name={item.ItemName}
+                price={item.UnitPrice}
+                discount={item.DiscountPrice || " "}
               />
             ))}
           </Slider>

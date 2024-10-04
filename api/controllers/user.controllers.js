@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
+import bcryptjs from "bcryptjs";
 
 import mongoose from "mongoose";
 
@@ -114,4 +115,47 @@ export const deleteUserByid = async (req, res) => {
   }
 
   res.status(200).json(user);
+};
+
+// Function to add a new user
+export const addUser = async (req, res) => {
+  const { firstname, lastname, username, email, password, usertype, avatar } =
+    req.body;
+
+  try {
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User with this email already exists." });
+    }
+
+    // Hash the password before saving
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
+
+    // Determine if the user is a manager based on usertype
+    const isManager = usertype === "manager";
+
+    // Create a new user
+    const newUser = new User({
+      firstname,
+      lastname,
+      username,
+      email,
+      password: hashedPassword,
+      usertype,
+      ismanager: isManager,
+      avatar,
+    });
+
+    // Save the user to the database
+    await newUser.save();
+
+    res.status(201).json({ message: "User added successfully!" });
+  } catch (error) {
+    console.error("Error adding user:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
 };

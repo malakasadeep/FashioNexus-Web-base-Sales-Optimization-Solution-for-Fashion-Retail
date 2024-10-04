@@ -113,13 +113,7 @@ export default function Footer() {
           </nav>
         </div>
       </div>
-      <div>
-        <p className=" text-center py-4">
-          @copyright developed by
-          <span className=" text-black"> champion programmers</span> | All
-          rights reserved
-        </p>
-      </div>
+      <div></div>
     </footer>
   );
 }

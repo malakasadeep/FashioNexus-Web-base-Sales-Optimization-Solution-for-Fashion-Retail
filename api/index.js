@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routs.js";
 import discountRouter from "./routes/discount.route.js";
-import productsRouter from "./routes/products.route.js";
 import orderRouter from "./routes/order.rout.js";
 import userRouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
@@ -15,6 +14,12 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+
+//dewni
+import inventoryRouter from "./routes/inventory.routs.js";
+
+//shadini
+import promotionRouter from "./routes/promotion.routes.js";
 
 dotenv.config();
 
@@ -28,6 +33,11 @@ mongoose
   });
 
 const app = express();
+
+//
+app.get("/", (req, res) => {
+  res.json({ mssg: "Welcome to the app" });
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -64,11 +74,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url)); // Get directory name
 app.use("/uploads", express.static(join(__dirname, "uploads")));
 
 app.use("/api/auth", authRouter);
+
 app.use("/api/user", userRouter);
 app.use("/api/discount", discountRouter);
-app.use("/api/products", productsRouter);
 app.use("/api/order", orderRouter);
 // Use OTP routes
+
+//dewni
+app.use("/api/inventories", inventoryRouter);
+
+// Use OTP routes
+//promotion routes
+app.use("/api/promotions", promotionRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
