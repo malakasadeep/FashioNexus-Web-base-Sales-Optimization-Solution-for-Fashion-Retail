@@ -182,7 +182,7 @@ export default function UpdateOffer() {
 
   return (
     <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-DarkColor mb-4">
+      <h2 className="text-3xl font-semibold text-DarkColor mb-4 text-center">
         Update the Offer
       </h2>
 
@@ -351,12 +351,14 @@ export default function UpdateOffer() {
               />
             </div>
 
-            <button
-              type="submit"
-              className=" bg-rose-400	p-3 rounded-lg px-8 font-bold text-xl align-middle"
-            >
-              Update Offer
-            </button>
+            <div className="flex justify-center mb-4">
+              <button
+                type="submit"
+                className="bg-rose-400 p-2 rounded-lg w-full max-w-xs font-bold text-xl align-middle"
+              >
+                Update Offer
+              </button>
+            </div>
 
             {error && <div className="error">{error}</div>}
           </form>

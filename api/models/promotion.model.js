@@ -48,6 +48,14 @@ const promotionSchema = new Schema(
       type: Number,
       required: true,
     },
+    itemId: {
+      type: String,
+      required: true,
+    },
+    itemName: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

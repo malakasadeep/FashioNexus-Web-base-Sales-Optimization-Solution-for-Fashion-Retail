@@ -173,7 +173,7 @@ function DiscountTable() {
                   Search
                 </button>
 
-                <button className="bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 text-rose-400 flex justify-center items-center whitespace-nowrap">
+                <button className="bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-1xl px-5 py-2.5 text-rose-400 flex justify-center items-center whitespace-nowrap">
                   <PromotionReport
                     promotions={promotions}
                     searchData={searchData}
@@ -244,7 +244,11 @@ function DiscountTable() {
                         <button
                           onClick={() =>
                             navigate("add", {
-                              state: { price: inventory.UnitPrice },
+                              state: {
+                                price: inventory.UnitPrice,
+                                itemId: inventory._id,
+                                itemName: inventory.ItemName,
+                              },
                             })
                           }
                           className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition text-1xl w-60"
