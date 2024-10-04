@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import jspdf from "jspdf";
 import "jspdf-autotable";
+import { MdFileDownload } from "react-icons/md";
 //import moment from "moment";
 //import "../../assets/css/user/userList.css";
 
@@ -95,9 +96,9 @@ export default function PromotionReport({ promotions }, { searchData }) {
           onClick={() => {
             generatePDF(promotions, searchData);
           }}
-          className="btn2"
+          className="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition duration-300 flex items-center gap-2"
         >
-          Generate report
+          <MdFileDownload /> Download Report
         </button>
       </div>
     </div>

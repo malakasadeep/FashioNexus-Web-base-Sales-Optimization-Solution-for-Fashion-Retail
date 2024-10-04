@@ -1,13 +1,20 @@
-import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { MdInfo } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  MdInfo,
+  MdDeleteForever,
+  MdSearch,
+  MdSort,
+  MdFileDownload,
+} from "react-icons/md";
+import { FaEdit, FaFilter, FaSpinner } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 import PromotionReport from "./PromotionReport";
 
 function DiscountTable() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchData, setSearchData] = useState({
     searchTerm: "",
     type: "all",
@@ -16,12 +23,11 @@ function DiscountTable() {
   });
   const [loading, setLoading] = useState(false);
   const [promotions, setPromotions] = useState([]);
-  const [inventories, setInventories] = useState([]);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const searchTerm = urlParams.get("searchTerm") || "";
-    const type = urlParams.get("category") || "all";
+    const type = urlParams.get("type") || "all";
     const sort = urlParams.get("sort") || "created_at";
     const order = urlParams.get("order") || "desc";
     setSearchData({ searchTerm, type, sort, order });
@@ -37,6 +43,11 @@ function DiscountTable() {
         setPromotions(data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Failed to fetch promotions. Please try again later.",
+        });
       }
       setLoading(false);
     };
@@ -44,76 +55,50 @@ function DiscountTable() {
     fetchPromotions();
   }, [location.search]);
 
-  useEffect(() => {
-    const fetchInventories = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `http://localhost:3000/api/inventories/search/get`
-        );
-        const data = await res.json();
-        setInventories(data);
-      } catch (error) {
-        console.error("Error fetching inventories:", error);
-      }
-      setLoading(false);
-    };
-
-    fetchInventories();
-  }, []);
-
   const handleChange = (e) => {
-    if (e.target.type === "select-one") {
-      setSearchData({ ...searchData, type: e.target.value });
-    }
-    if (e.target.id === "searchTerm") {
-      setSearchData({ ...searchData, searchTerm: e.target.value });
-    }
+    setSearchData({ ...searchData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const urlParams = new URLSearchParams();
-    urlParams.set("searchTerm", searchData.searchTerm);
-    urlParams.set("type", searchData.type);
-    const searchQuery = urlParams.toString();
-    navigate(`/manager/discount-management?${searchQuery}`);
+    const urlParams = new URLSearchParams(searchData);
+    navigate(`/manager/discount-management?${urlParams.toString()}`);
   };
 
   const handleDelete = async (promotionId) => {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#d4a373",
+      cancelButtonColor: "#a98467",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch(`/api/promotions/${promotionId}`, {
-            method: "DELETE",
-          });
-          const data = await res.json();
-          if (data.success === false) {
-            console.log(data.message);
-            return;
-          }
-          Swal.fire({
-            title: "Deleted!",
-            text: "The promotion has been deleted.",
-            icon: "success",
-          });
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/promotions/${promotionId}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire("Deleted!", "The promotion has been deleted.", "success");
           setPromotions((prev) =>
             prev.filter((promotion) => promotion._id !== promotionId)
           );
-          // navigate("/manager/discount-management");
-        } catch (error) {
-          console.log(error.message);
+        } else {
+          Swal.fire("Error!", data.message, "error");
         }
+      } catch (error) {
+        console.error("Error deleting promotion:", error);
+        Swal.fire(
+          "Error!",
+          "Failed to delete the promotion. Please try again.",
+          "error"
+        );
       }
-    });
+    }
   };
 
   const handleInfo = (promotion) => {
@@ -127,200 +112,162 @@ function DiscountTable() {
       `,
       icon: "info",
       confirmButtonText: "Close",
+      confirmButtonColor: "#d4a373",
     });
   };
 
   return (
-    <div
-      className="dashboard"
-      style={{ background: "#e3d5ca", padding: "20px" }}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] p-8 rounded-lg"
     >
-      {/* <Sidebar /> */}
-      <div className="dashboard--content">
-        <div>
-          <div className="list--header">
-            <div className="search--line flex items-center justify-between gap-5 flex-wrap md:flex-nowrap mb-8">
-              <div className="flex items-center gap-3 flex-grow">
+      <div className="max-w-7xl mx-auto p-6">
+        <h1 className="text-3xl font-bold text-DarkColor mb-8">
+          Discount Management
+        </h1>
+
+        <form onSubmit={handleSubmit} className="mb-8">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex-grow">
+              <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search..."
+                  name="searchTerm"
+                  placeholder="Search promotions..."
+                  value={searchData.searchTerm}
                   onChange={handleChange}
-                  id="searchTerm"
-                  className="border p-2 rounded-lg w-full md:w-auto"
+                  className="w-full p-3 pl-10 rounded-lg border border-DarkColor focus:outline-none focus:ring-2 focus:ring-DarkColor"
                 />
-                <select
-                  className="p-2 rounded-lg text-red-300"
-                  name="category"
-                  id="category"
-                  required
-                  onChange={handleChange}
-                >
-                  <option className="text-slate-400" hidden>
-                    Type
-                  </option>
-                  <option value="pDiscount">Percentage Discount</option>
-                  <option value="BOGO">Buy One Get One Free</option>
-                  <option value="fShipping">Free Shipping</option>
-                  <option value="fGift">Free Gift</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-5 flex-grow justify-end">
-                <button
-                  onClick={handleSubmit}
-                  className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition text-1xl w-60"
-                >
-                  Search
-                </button>
-
-                <button className="bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 text-rose-400 flex justify-center items-center whitespace-nowrap">
-                  <PromotionReport
-                    promotions={promotions}
-                    searchData={searchData}
-                  />
-                </button>
+                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-DarkColor text-xl" />
               </div>
             </div>
-
-            <div className="user--title">
-              <h1 className="text-2xl font-semibold">Items for Discounts</h1>
+            <div className="flex items-center gap-4">
+              <select
+                name="type"
+                value={searchData.type}
+                onChange={handleChange}
+                className="p-3 rounded-lg border border-DarkColor focus:outline-none focus:ring-2 focus:ring-DarkColor"
+              >
+                <option value="all">All Types</option>
+                <option value="pDiscount">Percentage Discount</option>
+                <option value="BOGO">Buy One Get One Free</option>
+                <option value="fShipping">Free Shipping</option>
+                <option value="fGift">Free Gift</option>
+              </select>
+              <button
+                type="submit"
+                className="bg-DarkColor text-white p-3 rounded-lg hover:bg-ExtraDarkColor transition duration-300 flex items-center gap-2"
+              >
+                <FaFilter /> Filter
+              </button>
+              <PromotionReport
+                promotions={promotions}
+                searchData={searchData}
+                render={({ onClick }) => (
+                  <button
+                    onClick={onClick}
+                    className="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition duration-300 flex items-center gap-2"
+                  >
+                    <MdFileDownload /> Download Report
+                  </button>
+                )}
+              />
             </div>
-            <br />
+          </div>
+        </form>
 
-            <div className="list--container">
-              {!loading && promotions.length === 0 && (
-                <p className="text-2xl text-center p-5 text-blue-950">
-                  No Promotions found
-                </p>
-              )}
-              {loading && (
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-lg w-full text-center">Loading....</p>
-                </div>
-              )}
-              <table className="min-w-full bg-PrimaryColor shadow-md rounded my-4">
+        <AnimatePresence>
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-center items-center h-64"
+            >
+              <FaSpinner className="animate-spin text-DarkColor text-5xl" />
+            </motion.div>
+          ) : promotions.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr>
-                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
-                      Images
-                    </td>
-                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
-                      Item Name
-                    </td>
-                    <td className="text-left px-2 py-2 font-semibold text-DarkColor">
-                      Price
-                    </td>
-                    <td className="text-left px-6 py-2 font-semibold text-DarkColor w-1/4">
-                      Action
-                    </td>
+                  <tr className="bg-DarkColor text-white">
+                    <th className="p-3 text-left">Promotion Name</th>
+                    <th className="p-3 text-left">Code</th>
+                    <th className="p-3 text-left">Discount %</th>
+                    <th className="p-3 text-left">Price</th>
+                    <th className="p-3 text-left">Final Price</th>
+                    <th className="p-3 text-left">Start Date</th>
+                    <th className="p-3 text-left">End Date</th>
+                    <th className="p-3 text-left">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {inventories.map((inventory) => (
-                    <tr key={inventory._id} className="hover:bg-PrimaryColor">
-                      <td className="text-left px-6 py-4 font-normal text-black">
-                        {/* Display the image here */}
-                        {inventory.imageUrls ? (
-                          <img
-                            src={
-                              inventory.imageUrls[
-                                inventory.imageUrls?.length - 1
-                              ]
-                            }
-                            alt={inventory.ItemName}
-                            className="w-16 h-16 object-cover rounded-lg"
-                          />
-                        ) : (
-                          <span>No Image</span>
-                        )}
+                  {promotions.map((promotion) => (
+                    <motion.tr
+                      key={promotion._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="border-b border-DarkColor bg-white hover:bg-SecondaryColor transition duration-300"
+                    >
+                      <td className="p-3">{promotion.promotionName}</td>
+                      <td className="p-3">{promotion.promotionCode}</td>
+                      <td className="p-3">{promotion.discountPercentage}%</td>
+                      <td className="p-3">${promotion.price}</td>
+                      <td className="p-3">${promotion.finalPrice || "N/A"}</td>
+                      <td className="p-3">
+                        {new Date(promotion.startDate).toLocaleDateString()}
                       </td>
-                      <td className="text-left px-6 py-4 font-normal text-black">
-                        {inventory.ItemName}
+                      <td className="p-3">
+                        {new Date(promotion.endDate).toLocaleDateString()}
                       </td>
-                      <td className="text-left px-6 py-4 font-normal text-black">
-                        ${inventory.UnitPrice}.00
+                      <td className="p-3">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleInfo(promotion)}
+                            className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300"
+                          >
+                            <MdInfo />
+                          </button>
+                          <Link
+                            to={`/manager/update-discount/${promotion._id}`}
+                            className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition duration-300"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(promotion._id)}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300"
+                          >
+                            <MdDeleteForever />
+                          </button>
+                        </div>
                       </td>
-                      <td>
-                        <button
-                          onClick={() =>
-                            navigate("add", {
-                              state: { price: inventory.UnitPrice },
-                            })
-                          }
-                          className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition text-1xl w-60"
-                        >
-                          Add Discount
-                        </button>
-                      </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
-
-              <div className="user--title">
-                <h1 className="text-2xl font-semibold">Existing Discounts</h1>
-              </div>
-              <br />
-
-              {!loading && promotions.length > 0 && (
-                <table className="list min-w-full bg-PrimaryColor shadow-md rounded">
-                  <tbody>
-                    <tr className="font-semibold text-blue-900 text-lg text-center p-4">
-                      <td className="px-8">Promotion Name</td>
-                      <td className="px-8">Promotion Code</td>
-                      <td className="px-8">Discount %</td>
-                      <td className="px-8">Price</td>
-                      <td className="px-8">Final Price</td>
-                      <td className="px-8">Start Date</td>
-                      <td className="px-8">End Date</td>
-                      <td className="px-8">Action</td>
-                    </tr>
-                    {promotions.map((promotion) => (
-                      <tr className="text-center" key={promotion._id}>
-                        <td className="py-4">{promotion.promotionName}</td>
-                        <td className="py-4">{promotion.promotionCode}</td>
-                        <td className="py-4">{promotion.discountPercentage}</td>
-                        <td className="py-4">{promotion.price}</td>
-                        <td className="py-4">
-                          {promotion.finalPrice || "N/A"}
-                        </td>
-                        <td className="py-4">{promotion.startDate}</td>
-                        <td>{promotion.endDate}</td>
-
-                        <td className="">
-                          <div className="flex">
-                            <button
-                              className="btn1 px-2"
-                              onClick={() => handleInfo(promotion)}
-                            >
-                              <MdInfo className="text-2xl" />
-                            </button>
-
-                            <Link
-                              to={`update/${promotion._id}`}
-                              className="btnU px-2"
-                            >
-                              <FaEdit className="text-2xl" />
-                            </Link>
-
-                            <button
-                              className="btnD px-2"
-                              onClick={(e) => handleDelete(promotion._id)}
-                            >
-                              <MdDeleteForever className="text-2xl" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          ) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-lg text-DarkColor"
+            >
+              No promotions found.
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

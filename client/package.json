@@ -50,7 +50,11 @@
     "react-select": "^5.8.0",
     "react-slick": "^0.30.2",
 
+
     "react-step-progress-bar": "^1.0.3",
+
+
+    "react-spinners": "^0.14.1",
 
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.28.0",

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiArrowLeft, FiLoader, FiPercent, FiDollarSign } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 export default function UpdateOffer() {
   const { id } = useParams();
@@ -18,10 +20,10 @@ export default function UpdateOffer() {
     applicableProducts: "",
     usageLimit: "",
   });
+
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  //const { offerID } = useParams();
+  const navigate = useNavigate();
 
   const calculateFinalPrice = (price, discountPercentage) => {
     if (price && discountPercentage) {
@@ -67,7 +69,6 @@ export default function UpdateOffer() {
     const { name, value } = e.target;
 
     if (name === "discountPercentage" || name === "price") {
-      // Validate number input
       if (/^\d*$/.test(value)) {
         const updatedFormData = { ...formData, [name]: value };
         const finalPrice = calculateFinalPrice(
@@ -101,6 +102,7 @@ export default function UpdateOffer() {
     const endDate = new Date(formData.endDate);
 
     if (startDate < today) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Invalid Date",
@@ -110,6 +112,7 @@ export default function UpdateOffer() {
     }
 
     if (endDate < today) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Invalid Date",
@@ -119,6 +122,7 @@ export default function UpdateOffer() {
     }
 
     if (endDate < startDate) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Invalid Date",
@@ -128,6 +132,7 @@ export default function UpdateOffer() {
     }
 
     if (parseInt(formData.usageLimit, 10) <= 0) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Validation Error",
@@ -145,223 +150,219 @@ export default function UpdateOffer() {
         "Content-Type": "application/json",
       },
     });
+
     const json = await response.json();
 
     if (!response.ok) {
       setError(json.error);
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: `${data.message}`,
+        text: `${json.message}`,
       });
       return;
     }
-    if (response.ok) {
-      setFormData({
-        promotionName: "",
-        promotionCode: "",
-        description: "",
-        promotionType: "Percentage Discount",
-        discountPercentage: "",
-        price: "",
-        finalPrice: "",
-        startDate: "",
-        endDate: "",
-        applicableProducts: "",
-        usageLimit: "",
-      });
 
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Promotion updated successfully",
-      });
-      navigate("/manager/discount-management");
-    }
+    setFormData({
+      promotionName: "",
+      promotionCode: "",
+      description: "",
+      promotionType: "Percentage Discount",
+      discountPercentage: "",
+      price: "",
+      finalPrice: "",
+      startDate: "",
+      endDate: "",
+      applicableProducts: "",
+      usageLimit: "",
+    });
+
+    setLoading(false);
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Promotion updated successfully",
+    });
+
+    navigate("/manager/discount-management?tab=discounts");
   };
 
   return (
-    <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-        Update the Offer
-      </h2>
+    <div className=" p-8 pl-20 ">
+      <motion.div
+        className="min-h-screen bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] px-6 py-8 rounded-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex  items-center mb-6">
+          {/* Back Button */}
+          <button
+            className="bg-DarkColor text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-ExtraDarkColor transition-colors"
+            onClick={() => navigate(-1)}
+          >
+            <FiArrowLeft className="mr-2" />
+          </button>
+          <h2 className="text-3xl font-bold text-DarkColor ml-20">
+            Update Offer
+          </h2>
+        </div>
 
-      <div className="flex justify-center items-center min-h-screen">
-        <section className="bg-orange-100	p-6 rounded-lg shadow-md w-full max-w-lg">
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Offer Name
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="text"
-                placeholder="Offer Name"
-                name="promotionName"
-                value={formData.promotionName}
-                onChange={handleInputChange}
-              />
-            </div>
+        <motion.div
+          className="flex  min-h-screen"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <section className="bg-white p-6 rounded-lg shadow-md w-11/12">
+            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-10">
+              {/* First Column */}
+              <div className="space-y-10">
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Offer Name</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="text"
+                    placeholder="Offer Name"
+                    name="promotionName"
+                    value={formData.promotionName}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Offer Code
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="text"
-                placeholder="Offer Code"
-                name="promotionCode"
-                value={formData.promotionCode}
-                onChange={handleInputChange}
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Offer Code</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="text"
+                    placeholder="Offer Code"
+                    name="promotionCode"
+                    value={formData.promotionCode}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Description
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="textarea"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleInputChange}
-                name="description"
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Description</label>
+                  <textarea
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    placeholder="Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="type" className="text-1xl font-semibold">
-                Offer Type
-              </label>
-              <select
-                name="promotionType"
-                id="type"
-                className="mt-2 p-2 border-spacing-1"
-                onChange={handleInputChange}
-                value={formData.promotionType}
-              >
-                <option value="pDiscount">Percentage Discount</option>
-                <option value="BOGO">Buy One Get One Free</option>
-                <option value="fShipping">Free Shipping</option>
-                <option value="fGift">Free Gift</option>
-              </select>
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Offer Type</label>
+                  <select
+                    name="promotionType"
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    onChange={handleInputChange}
+                    value={formData.promotionType}
+                  >
+                    <option value="pDiscount">Percentage Discount</option>
+                    <option value="BOGO">Buy One Get One Free</option>
+                    <option value="fShipping">Free Shipping</option>
+                    <option value="fGift">Free Gift</option>
+                  </select>
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Discount Percentage
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="text"
-                placeholder="Discount Percentage"
-                name="discountPercentage"
-                onChange={handleInputChange}
-                value={formData.discountPercentage}
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold flex items-center">
+                    Discount Percentage <FiPercent className="ml-2" />
+                  </label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="text"
+                    placeholder="Discount Percentage"
+                    name="discountPercentage"
+                    onChange={handleInputChange}
+                    value={formData.discountPercentage}
+                  />
+                </div>
+              </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Price
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="text"
-                placeholder="Price"
-                name="price"
-                onChange={handleInputChange}
-              />
-            </div>
+              {/* Second Column */}
+              <div className="space-y-10">
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold flex items-center">
+                    Price <FiDollarSign className="ml-2" />
+                  </label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="text"
+                    placeholder="Price"
+                    name="price"
+                    onChange={handleInputChange}
+                    value={formData.price}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Final Price
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="text"
-                placeholder="Final Price"
-                name="finalPrice"
-                value={formData.finalPrice}
-                readOnly
-                onChange={handleInputChange}
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Final Price</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="text"
+                    placeholder="Final Price"
+                    name="finalPrice"
+                    value={formData.finalPrice}
+                    readOnly
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Start Date
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="date"
-                placeholder="dd-mm-yyyy"
-                name="startDate"
-                onChange={handleInputChange}
-                value={formData.startDate}
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Start Date</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="date"
+                    name="startDate"
+                    onChange={handleInputChange}
+                    value={formData.startDate}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                End Date
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="date"
-                placeholder="dd-mm-yyyy"
-                name="endDate"
-                onChange={handleInputChange}
-                value={formData.endDate}
-              />
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">End Date</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="date"
+                    name="endDate"
+                    onChange={handleInputChange}
+                    value={formData.endDate}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="type" className="text-1xl font-semibold">
-                Applicable Products
-              </label>
-              <select
-                name="applicableProducts"
-                id="type"
-                className="mt-2 p-2 border-spacing-1"
-                onChange={handleInputChange}
-                value={formData.applicableProducts}
-              >
-                <option value="apparel">Apparel</option>
-                <option value="outerwear">Outerwear</option>
-                <option value="kidsclothing">Children's Clothing</option>
-                <option value="formalwear">Formal Wear</option>
-              </select>
-            </div>
+                <div className="flex flex-col">
+                  <label className="text-1xl font-semibold">Usage Limit</label>
+                  <input
+                    className="mt-2 p-2 border-spacing-1 rounded-lg border"
+                    type="number"
+                    placeholder="Usage Limit"
+                    name="usageLimit"
+                    onChange={handleInputChange}
+                    value={formData.usageLimit}
+                  />
+                </div>
 
-            <div className="flex flex-col mb-4">
-              <label htmlFor="" className="text-1xl font-semibold">
-                Usage Limit
-              </label>
-              <input
-                className="mt-2 p-2 border-spacing-1"
-                type="number"
-                placeholder="Usage Limit"
-                name="usageLimit"
-                onChange={handleInputChange}
-                value={formData.usageLimit}
-              />
-            </div>
+                <button
+                  type="submit"
+                  className=" bg-rose-400 p-3 rounded-lg font-bold text-xl w-full flex justify-center items-center"
+                >
+                  {loading ? (
+                    <FiLoader className="animate-spin" />
+                  ) : (
+                    "Update Offer"
+                  )}
+                </button>
+              </div>
 
-            <button
-              type="submit"
-              className=" bg-rose-400	p-3 rounded-lg px-8 font-bold text-xl align-middle"
-            >
-              Update Offer
-            </button>
-
-            {error && <div className="error">{error}</div>}
-          </form>
-        </section>
-      </div>
+              {error && <div className="error text-red-600 mt-4">{error}</div>}
+            </form>
+          </section>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
