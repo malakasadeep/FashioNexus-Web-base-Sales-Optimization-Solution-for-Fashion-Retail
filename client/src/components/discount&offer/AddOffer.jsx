@@ -17,6 +17,8 @@ export default function AddOffer() {
     endDate: "",
     applicableProducts: "apparel",
     usageLimit: "",
+    itemId: location.state.itemId ?? "", // Add itemId
+    itemName: location.state.itemName ?? "", // Add itemName
   });
 
   const [error, setError] = useState(null);
@@ -99,10 +101,21 @@ export default function AddOffer() {
       return;
     }
 
+    if (!formData.itemId || !formData.itemName) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Item ID and Item Name are required.",
+      });
+      return;
+    }
+
     const response = await fetch("http://localhost:3000/api/promotions", {
       method: "POST",
       body: JSON.stringify({
         ...formData,
+        itemId: formData.itemId, // Include itemId
+        itemName: formData.itemName,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -144,8 +157,8 @@ export default function AddOffer() {
 
   return (
     <div className="bg-SecondaryColor p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-DarkColor mb-4">
-        Add New Offer
+      <h2 className="text-3xl font-semibold text-DarkColor mb-4 text-center">
+        Add New Offer for {formData.itemName}
       </h2>
 
       <div className="flex justify-center items-center min-h-screen">
@@ -231,6 +244,7 @@ export default function AddOffer() {
                 type="text"
                 placeholder="Price"
                 name="price"
+                readOnly
                 onChange={handleInputChange}
               />
             </div>
@@ -307,12 +321,14 @@ export default function AddOffer() {
               />
             </div>
 
-            <button
-              type="submit"
-              className=" bg-rose-400	p-3 rounded-lg px-8 font-bold text-xl align-middle"
-            >
-              Add Offer
-            </button>
+            <div className="flex justify-center mb-4">
+              <button
+                type="submit"
+                className="bg-rose-400 p-2 rounded-lg w-full max-w-xs font-bold text-xl align-middle"
+              >
+                Add Offer
+              </button>
+            </div>
 
             {error && <div className="error">{error}</div>}
           </form>

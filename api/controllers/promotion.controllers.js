@@ -39,7 +39,13 @@ export const createPromotion = async (req, res) => {
     endDate,
     applicableProducts,
     usageLimit,
+    itemId, // Add itemId here
+    itemName, // Add itemName here
   } = req.body;
+
+  if (!itemId || !itemName) {
+    return res.status(400).json({ error: "itemId and itemName are required." });
+  }
 
   //add doc to db
   try {
@@ -55,6 +61,8 @@ export const createPromotion = async (req, res) => {
       endDate,
       applicableProducts,
       usageLimit,
+      itemId, // Include itemId in the creation
+      itemName, // Include itemName in the creation
     });
     res.status(200).json(promotion);
   } catch (error) {
@@ -83,23 +91,36 @@ export const deletePromotion = async (req, res) => {
 
 export const updatePromotion = async (req, res) => {
   const { id } = req.params;
+  const { promotionName } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such promotion" });
   }
 
-  const promotion = await Promotion.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
+  // Find promotion by id and name
+  const promotion = await Promotion.findOne({
+    _id: id,
+    promotionName: promotionName,
+  });
 
   if (!promotion) {
-    return res.status(404).json({ error: "No such promotion" });
+    return res
+      .status(404)
+      .json({ error: "No promotion found with the given ID and name" });
   }
 
-  res.status(200).json(promotion);
+  // Proceed with the update if found
+  const updatedPromotion = await Promotion.findOneAndUpdate(
+    { _id: id, promotionName: promotionName },
+    { ...req.body },
+    { new: true }
+  );
+
+  if (!updatedPromotion) {
+    return res.status(404).json({ error: "Failed to update promotion" });
+  }
+
+  res.status(200).json(updatedPromotion);
 };
 
 export const getPromotionSearch = async (req, res, next) => {

@@ -47,6 +47,9 @@ const inventorySchema = new Schema({
     type: Array,
     required: true,
   },
+  Discount: {
+    type: Number,
+  },
 });
 
 const Inventory = mongoose.model("Inventory", inventorySchema);
