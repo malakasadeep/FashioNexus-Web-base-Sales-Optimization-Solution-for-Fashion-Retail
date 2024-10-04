@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import ProductCard from "../../layouts/ProductCard"; // Import FashionCard component
+import ProductCard from "../../layouts/ProductCard";
 import Slider from "react-slick";
 import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
@@ -8,16 +8,20 @@ import "slick-carousel/slick/slick-theme.css";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useSelector } from "react-redux";
+import { TailSpin } from "react-loader-spinner";
 
 const FashionItem = () => {
-  const { id } = useParams();
-  const [fashionItem, setFashionItem] = useState(null); // Initially null
+  const { id } = useParams(); // Get item ID from URL parameters
+  const { currentUser } = useSelector((state) => state.user); // Get user from Redux
+
+  // State hooks
+  const [fashionItem, setFashionItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(""); // Initially empty string
-  const [selectedColor, setSelectedColor] = useState(""); // Initially empty string
-  const { currentUser } = useSelector((state) => state.user);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [inventories, setInventories] = useState([]);
 
   // Fetch item data from backend API
   useEffect(() => {
@@ -29,8 +33,8 @@ const FashionItem = () => {
         }
         const data = await response.json();
         setFashionItem(data);
-        setSelectedSize(data.Sizes[0] || ""); // Check if sizes exist
-        setSelectedColor(data.Colors[0] || ""); // Check if colors exist
+        setSelectedSize(data.Sizes[0] || "");
+        setSelectedColor(data.Colors[0] || "");
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -41,31 +45,59 @@ const FashionItem = () => {
     fetchItem();
   }, [id]);
 
+  // Fetch recommended inventories
+  useEffect(() => {
+    const fetchInventories = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/inventories/search/get?limit=4` // Limiting the results
+        );
+        const data = await res.json();
+        setInventories(data);
+      } catch (error) {
+        console.error("Error fetching inventories:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchInventories();
+  }, []);
+
+  // Handle quantity changes
   const handleIncrease = () => setQuantity(quantity + 1);
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
+  // Handle add to cart
   const handleAddToCart = () => {
+    if (!currentUser) {
+      Swal.fire({
+        title: "Please log in",
+        text: "You need to log in to add items to the cart.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     try {
-      // Prepare the cart item object
       const cartItem = {
-        userId: currentUser._id, // User ID from Redux state
+        userId: currentUser._id,
         itemId: id,
         title: fashionItem.ItemName,
         img: fashionItem.imageUrls[0],
         price: fashionItem.UnitPrice,
         quantity,
         size: selectedSize,
-        color: selectedColor, // Pass the selected color here
+        color: selectedColor,
       };
 
-      // Retrieve existing cart from localStorage
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(cartItem); // Add the new item to the cart
-      localStorage.setItem("cart", JSON.stringify(cart)); // Save updated cart back to localStorage
+      cart.push(cartItem);
+      localStorage.setItem("cart", JSON.stringify(cart));
 
-      // Show success alert
       Swal.fire({
         title: "Item added to cart successfully!",
         text: "Would you like to view your cart or add more items?",
@@ -75,12 +107,10 @@ const FashionItem = () => {
         cancelButtonText: "Add More",
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "/cart"; // Redirect to cart page
+          window.location.href = "/cart";
         }
-        console.log("Item added to cart:", cartItem);
       });
     } catch (error) {
-      // Handle errors (e.g., failed to add to cart)
       Swal.fire({
         title: "Error!",
         text: "An error occurred while adding the item to the cart. Please try again.",
@@ -90,21 +120,22 @@ const FashionItem = () => {
     }
   };
 
+  // Handle size and color changes
   const handleSizeChange = (e) => setSelectedSize(e.target.value);
-  const handleColorChange = (color) => {
-    setSelectedColor(color); // Update the selected color with the clicked color code
-  };
+  const handleColorChange = (color) => setSelectedColor(color);
 
+  // If loading or error occurs, return appropriate messages
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#a98467" ariaLabel="loading" />
+      </div>
+    );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (error) return <div>Error: {error}</div>;
 
-  const recommendedItems = fashionItem.recommendedItems || []; // Assuming the API returns recommended items
-
+  // Slider settings
   const settings = {
     dots: true,
     infinite: true,
@@ -189,13 +220,13 @@ const FashionItem = () => {
                 {fashionItem.Colors?.map((color) => (
                   <button
                     key={color}
-                    style={{ backgroundColor: color }} // Color code as background
+                    style={{ backgroundColor: color }}
                     className={`w-8 h-8 rounded-full border-2 ${
                       selectedColor === color
                         ? "border-black"
                         : "border-transparent"
                     }`}
-                    onClick={() => handleColorChange(color)} // Set color on click
+                    onClick={() => handleColorChange(color)}
                   />
                 ))}
               </div>
@@ -240,13 +271,14 @@ const FashionItem = () => {
             Recommended for You
           </h2>
           <Slider {...settings}>
-            {recommendedItems.map((item) => (
+            {inventories.map((item) => (
               <ProductCard
-                key={item.id}
-                id={item.id}
+                key={item._id}
+                id={item._id}
                 img={item.imageUrls[0]}
                 name={item.ItemName}
                 price={item.UnitPrice}
+                discount={item.DiscountPrice || " "}
               />
             ))}
           </Slider>

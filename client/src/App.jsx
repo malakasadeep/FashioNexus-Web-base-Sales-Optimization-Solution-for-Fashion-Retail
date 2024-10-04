@@ -33,8 +33,8 @@ export default function App() {
         {/* Dashboard Route */}
         <Route element={<PrivateAdmin />}>
           <Route path="/manager/*" element={<DashboardLayout />} />
-          <Route path="/update/:id*" element={<UpdateInventory />} />
-          <Route path="/update/:id*" element={<DeleteInventory />} />
+          <Route path="/update/:id" element={<UpdateInventory />} />
+          <Route path="/update/:id" element={<DeleteInventory />} />
         </Route>
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />
