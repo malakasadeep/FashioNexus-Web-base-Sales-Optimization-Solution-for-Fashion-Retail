@@ -3,6 +3,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DiscountCard from "../layouts/DiscountCard";
+import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Import spinner icon
+import { FaSpinner } from "react-icons/fa";
 
 export default function Shop() {
   const [itemsWithOffers, setItemsWithOffers] = useState([]);
@@ -80,7 +82,11 @@ export default function Shop() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FaSpinner className="animate-spin text-DarkColor text-5xl" />
+      </div>
+    );
   }
 
   if (error) {
@@ -97,11 +103,9 @@ export default function Shop() {
       </div>
 
       {/* Carousel Section */}
-
       <Slider {...settings}>
         {itemsWithOffers.map((item) => (
           <div key={item.id} className="px-3 mb-10 mt-5">
-            {" "}
             {/* Add padding between slides */}
             <DiscountCard
               id={item._id}

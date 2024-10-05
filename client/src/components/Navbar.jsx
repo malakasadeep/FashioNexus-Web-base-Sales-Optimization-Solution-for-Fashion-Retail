@@ -12,6 +12,7 @@ import {
   signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { NavLink } from "react-router-dom";
+import logo from "./../assets/img/logo-removebg-preview.png";
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
@@ -58,7 +59,7 @@ export default function Navbar() {
           <div>
             <NavLink to="/" spy={true} smooth={true} duration={500}>
               <h1 className="text-2xl font-semibold text-ExtraDarkColor cursor-pointer">
-                FashioNexus
+                <img src={logo} className="w-56" />
               </h1>
             </NavLink>
           </div>
