@@ -209,12 +209,24 @@ export default function InventoryManagementAll() {
               <th className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Colors
               </th>
-              <th className="text-left px-6 py-4 font-semibold text-DarkColor">
+              <th className="text-left px-2 py-2 font-semibold text-DarkColor">
                 Stock Quantity
               </th>
-              <th className="text-left px-6 py-4 font-semibold text-DarkColor">
-                Actions
-              </th>
+              {/* <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Reorder Level
+              </td>
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Stock Status
+              </td>
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Supplier Name
+              </td>
+              <td className="text-left px-2 py-2 font-semibold text-DarkColor">
+                Supplier Contact
+              </td> */}
+              <td className="text-left px-6 py-2 font-semibold text-DarkColor">
+                Action
+              </td>
             </tr>
           </thead>
           <tbody>
