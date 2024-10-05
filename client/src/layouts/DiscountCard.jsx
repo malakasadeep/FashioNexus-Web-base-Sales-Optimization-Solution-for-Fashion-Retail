@@ -6,19 +6,24 @@ import { Star, ShoppingCart, Clock } from "lucide-react";
 export default function DiscountCard({
   id,
   img,
-  name,
-  price,
-  description,
-  stockCount,
-  sizes,
-  colors,
-  offers,
+  name = "No name available",
+  price = 0,
+  description = "No description available",
+  stockCount = 0,
+  sizes = [],
+  colors = [],
+  offers = [],
 }) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState("");
   const offer = offers.length > 0 ? offers[0] : null;
 
   useEffect(() => {
+    if (!offer || !offer.endDate) {
+      setTimeLeft("No offer available");
+      return; // Exit early if offer or endDate is missing
+    }
+
     const timer = setInterval(() => {
       const now = new Date();
       const end = new Date(offer.endDate);
@@ -37,7 +42,7 @@ export default function DiscountCard({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [offer.endDate]);
+  }, [offer]);
 
   const handleCardClick = () => {
     navigate(`/item/${id}`);
@@ -50,24 +55,34 @@ export default function DiscountCard({
       onClick={handleCardClick}
     >
       <div className="relative">
-        <img src={img} alt={name} className="w-full h-48 object-cover" />
-        <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-br-lg">
-          {offer.discountPercentage}% OFF
-        </div>
+        <img
+          src={img || "/placeholder-image.jpg"}
+          alt={name}
+          className="w-full h-48 object-cover"
+        />
+        {offer && offer.discountPercentage ? (
+          <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-br-lg">
+            {offer.discountPercentage}% OFF
+          </div>
+        ) : null}
       </div>
 
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-1">{name}</h2>
-        <p className="text-sm text-gray-600 mb-2">{offer.promotionName}</p>
+        <p className="text-sm text-gray-600 mb-2">
+          {offer?.promotionName || "No promotion available"}
+        </p>
 
         <div className="flex justify-between items-center mb-2">
           <div>
             <span className="text-lg font-bold text-gray-900">
-              ${offer.finalPrice}
+              ${offer?.finalPrice || price}
             </span>
-            <span className="text-sm text-gray-500 line-through ml-2">
-              ${offer.price}
-            </span>
+            {offer && offer.price && (
+              <span className="text-sm text-gray-500 line-through ml-2">
+                ${offer.price}
+              </span>
+            )}
           </div>
           <div className="flex items-center">
             <Star className="w-4 h-4 text-yellow-400 mr-1" />
@@ -85,7 +100,7 @@ export default function DiscountCard({
             Stock: {stockCount} left
           </span>
           <span className="text-sm font-medium text-blue-600">
-            Code: {offer.promotionCode}
+            Code: {offer?.promotionCode || "N/A"}
           </span>
         </div>
 
@@ -99,7 +114,7 @@ export default function DiscountCard({
         </motion.button>
       </div>
 
-      {timeLeft !== "Offer expired" && (
+      {timeLeft !== "Offer expired" && offer && (
         <motion.div
           className="absolute top-2 right-2 bg-yellow-400 text-gray-800 px-2 py-1 rounded-full text-xs font-bold"
           animate={{ scale: [1, 1.1, 1] }}

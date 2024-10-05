@@ -84,13 +84,25 @@ export const deletePromotion = async (req, res) => {
     return res.status(404).json({ error: "No such promotion" });
   }
 
-  const promotion = await Promotion.findOneAndDelete({ _id: id });
+  try {
+    // Find the promotion by id
+    const promotion = await Promotion.findOneAndDelete({ _id: id });
 
-  if (!promotion) {
-    return res.status(404).json({ error: "No such promotion" });
+    if (!promotion) {
+      return res.status(404).json({ error: "No such promotion" });
+    }
+
+    // Update the associated Inventory item, setting haveOffer to false
+    await Inventory.updateOne(
+      { _id: promotion.itemId }, // Use the itemId from the deleted promotion
+      { $set: { haveOffer: false } } // Update the haveOffer field to false
+    );
+
+    // Return the deleted promotion
+    res.status(200).json(promotion);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
-  res.status(200).json(promotion);
 };
 
 //update a promotion

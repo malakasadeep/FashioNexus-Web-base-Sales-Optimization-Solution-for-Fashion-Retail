@@ -59,7 +59,7 @@ export default function Navbar() {
           <div>
             <NavLink to="/" spy={true} smooth={true} duration={500}>
               <h1 className="text-2xl font-semibold text-ExtraDarkColor cursor-pointer">
-                <img src={logo} className="w-56" />
+                <img src={logo} className="w-52" />
               </h1>
             </NavLink>
           </div>
