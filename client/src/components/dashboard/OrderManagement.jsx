@@ -123,6 +123,8 @@ export default function OrderManagement() {
   const openCard = (order) => {
     setIsModalOpen(true);
     setSelectedOrder(order);
+    console.log(selectedOrder);
+    console.log("Selected Order:", selectedOrder.customerInfo);
   };
 
   const closeModal = () => {
@@ -131,7 +133,7 @@ export default function OrderManagement() {
 
   return (
     <motion.div
-      className=" p-10 bg-PrimaryColor min-h-screen"
+      className=" p-5 bg-PrimaryColor min-h-screen ml-16"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -150,7 +152,7 @@ export default function OrderManagement() {
         <div>
           <h2>Monthly Orders</h2>
           <LineChart
-            width={700}
+            width={600}
             height={300}
             series={[
               // { data: pData, label: "pv" },
@@ -239,11 +241,14 @@ export default function OrderManagement() {
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
-          className="text-center items-center bg-white p-10 w-1/2 rounded-lg"
+          className="text-center bg-white p-10 w-3/4 max-w-4xl rounded-lg ml-20"
           overlayClassName="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60"
         >
-          <h2 className="mb-10 font-bold text-2xl"> Order Details</h2>
-          <div className="p-10">
+          {/* Modal Header */}
+          <h2 className="mb-8 font-bold text-3xl">Order Details</h2>
+
+          {/* Progress Bar */}
+          <div className="w-full mb-10">
             <ProgressBar
               percent={
                 selectedOrder.status === "Pending"
@@ -254,57 +259,163 @@ export default function OrderManagement() {
                   ? 100
                   : 0
               }
+              filledBackground="linear-gradient(to right, #00A896, #028090)"
             >
               <Step>
-                {({ accomplished, index }) => (
-                  <div
-                    className={`bg-black rounded-full h-14 w-20 ${
-                      accomplished ? "accomplished" : null
-                    }`}
-                  >
-                    <Lottie animationData={animationData} loop={true} />
+                {({ accomplished }) => (
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                        accomplished ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <Lottie
+                        animationData={animationData}
+                        loop={accomplished}
+                        className="h-10 w-10"
+                      />
+                    </div>
+                    <p className="mt-2 text-sm">Pending</p>
                   </div>
                 )}
               </Step>
               <Step>
-                {({ accomplished, index }) => (
-                  <div
-                    className={`bg-black rounded-full h-14 w-20   ${
-                      accomplished ? "accomplished" : null
-                    }`}
-                  >
-                    <Lottie animationData={animationData1} loop={true} />
+                {({ accomplished }) => (
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                        accomplished ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <Lottie
+                        animationData={animationData1}
+                        loop={accomplished}
+                        className="h-10 w-10"
+                      />
+                    </div>
+                    <p className="mt-2 text-sm">Shipped</p>
                   </div>
                 )}
               </Step>
               <Step>
-                {({ accomplished, index }) => (
-                  <div
-                    className={`bg-black rounded-full h-14 w-20  ${
-                      accomplished ? "accomplished" : null
-                    }`}
-                  >
-                    <Lottie animationData={animationData1} loop={true} />
+                {({ accomplished }) => (
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                        accomplished ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <Lottie
+                        animationData={animationData1}
+                        loop={accomplished}
+                        className="h-10 w-10"
+                      />
+                    </div>
+                    <p className="mt-2 text-sm">Delivered</p>
                   </div>
                 )}
               </Step>
             </ProgressBar>
-            <div className="mt-20">
-              <div className="flex gap-5">
-                <h2>Order ID: {selectedOrder.orderId}</h2>
-                <h2>Payment Method: {selectedOrder.paymentMethod}</h2>
-                <h2>Total: {selectedOrder.total}</h2>
-                <h2>Date: {selectedOrder.createdAt}</h2>
-              </div>
+          </div>
 
-              <div className="flex gap-5 mt-5">
-                <h2>Order ID: {selectedOrder.orderId}</h2>
-                <h2>Payment Method: {selectedOrder.paymentMethod}</h2>
-                <h2>Total: {selectedOrder.orderId}</h2>
-                <h2>Date: {selectedOrder.orderId}</h2>
+          {/* Order Info */}
+          <div className="p-6">
+            {/* Order Summary */}
+            <div className="grid grid-cols-2 gap-5 text-left">
+              <div>
+                <h3 className="font-semibold">Order ID:</h3>
+                <p>{selectedOrder.orderId}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Payment Method:</h3>
+                <p>{selectedOrder.paymentMethod}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Total Amount:</h3>
+                <p>${selectedOrder.total}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Order Date:</h3>
+                <p>{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
+
+            {/* Customer and Delivery Info (Side by Side) */}
+            <div className="mt-10 grid grid-cols-2 gap-5">
+              {/* Customer Info */}
+              <div>
+                <h3 className="font-semibold text-xl mb-3">
+                  Customer Information
+                </h3>
+                <div>
+                  <h4 className="font-semibold">Customer Name:</h4>
+                  <p>{selectedOrder.customerInfo.name || "N/A"}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Email:</h4>
+                  <p>{selectedOrder.customerInfo.email || "N/A"}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Mobile:</h4>
+                  <p>{selectedOrder.customerInfo.mobile || "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Delivery Info */}
+              <div>
+                <h3 className="font-semibold text-xl mb-3">
+                  Delivery Information
+                </h3>
+                <div>
+                  <h4 className="font-semibold">Address:</h4>
+                  <p>{selectedOrder.deliveryInfo.address || "N/A"}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">City:</h4>
+                  <p>{selectedOrder.deliveryInfo.city || "N/A"}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Postal Code:</h4>
+                  <p>{selectedOrder.deliveryInfo.postalCode || "N/A"}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Items Table */}
+            <div className="mt-10">
+              <h3 className="font-semibold text-xl mb-3">Ordered Items</h3>
+              <table className="min-w-full bg-white border border-gray-300">
+                <thead>
+                  <tr>
+                    <th className="py-2 px-4 border-b">Item</th>
+                    <th className="py-2 px-4 border-b">Color</th>
+                    <th className="py-2 px-4 border-b">Size</th>
+                    <th className="py-2 px-4 border-b">Quantity</th>
+                    <th className="py-2 px-4 border-b">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="py-2 px-4 border-b">{item.title}</td>
+                      <td className="py-2 px-4 border-b">{item.color}</td>
+                      <td className="py-2 px-4 border-b">{item.size}</td>
+                      <td className="py-2 px-4 border-b">{item.quantity}</td>
+                      <td className="py-2 px-4 border-b">${item.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* Close Button */}
+          <button
+            onClick={closeModal}
+            className="mt-10 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            Close
+          </button>
         </Modal>
       </div>
     </motion.div>

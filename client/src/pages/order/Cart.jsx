@@ -116,9 +116,13 @@ const Cart = () => {
                     <p className="text-gray-600">
                       Color:{" "}
                       <span
-                        style={{ backgroundColor: item.color, padding: "5px" }}
+                        style={{
+                          backgroundColor: item.color,
+                          color: item.color,
+                        }}
+                        className="w-8 h-8 rounded-full text-xs"
                       >
-                        {item.color}
+                        ws
                       </span>
                     </p>{" "}
                     {/* Display color */}

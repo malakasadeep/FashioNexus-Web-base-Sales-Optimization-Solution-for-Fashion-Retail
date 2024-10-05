@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-
+import { PDFViewer } from "@react-pdf/renderer";
 import LoadingSpinner from "../../components/Spinner";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import EditOrderPopup from "./EditOrderPopup";
 import { useSelector } from "react-redux";
+import Invoice from "./Invoice";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -97,6 +99,7 @@ const MyOrders = () => {
           onChange={handleSearchChange}
           className="w-full p-2 border border-gray-300 rounded mb-4"
         />
+
         {loading ? (
           <LoadingSpinner />
         ) : (
@@ -235,12 +238,21 @@ const MyOrders = () => {
                         >
                           Delete
                         </button>
-                        <button
-                          onClick={() => handleDownloadBill(order)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                        <PDFDownloadLink
+                          document={<Invoice expandedOrders={order} />}
+                          fileName="customer_invoice.pdf"
                         >
-                          Download Bill
-                        </button>
+                          {({ loading }) => (
+                            <button
+                              className="bg-black text-white px-4 py-2 rounded-md shadow hover:bg-ExtraDarkColor transition-colors duration-300"
+                              disabled={loading}
+                            >
+                              {loading
+                                ? "Generating PDF..."
+                                : "Generate Report"}
+                            </button>
+                          )}
+                        </PDFDownloadLink>
                       </div>
                     </div>
                   )}
