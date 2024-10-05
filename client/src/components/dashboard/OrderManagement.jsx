@@ -173,11 +173,12 @@ export default function OrderManagement() {
             `http://localhost:3000/api/order/status/${id}`,
             { status: newStatus }
           );
+
           await send("service_fjpvjh9", "template_1x528d6", {
             to_email: order.customerInfo.email,
             status: newStatus,
           });
-          Swal.fire("Email Sent Sucessfully", "", "success");
+
           Swal.fire("Saved!", "", "success");
           window.location.reload();
         } catch (error) {
@@ -370,7 +371,7 @@ export default function OrderManagement() {
                         className="p-2 bg-PrimaryColor rounded"
                         value={order.status}
                         onChange={(e) =>
-                          handleStatusChange(order._id, e.target.value)
+                          handleStatusChange(order, order._id, e.target.value)
                         }
                       >
                         <option value="Pending">Pending</option>
