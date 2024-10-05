@@ -47,6 +47,11 @@ const inventorySchema = new Schema({
     type: Array,
     required: true,
   },
+  haveOffer: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 const Inventory = mongoose.model("Inventory", inventorySchema);

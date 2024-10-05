@@ -1,3 +1,4 @@
+import Inventory from "../models/inventory.model.js";
 import Promotion from "../models/promotion.model.js";
 import mongoose from "mongoose";
 
@@ -29,6 +30,8 @@ export const getPromotion = async (req, res) => {
 export const createPromotion = async (req, res) => {
   const {
     promotionName,
+    itemName,
+    itemId,
     promotionCode,
     description,
     promotionType,
@@ -41,10 +44,13 @@ export const createPromotion = async (req, res) => {
     usageLimit,
   } = req.body;
 
-  //add doc to db
+  // Add doc to db
   try {
+    // Create the promotion
     const promotion = await Promotion.create({
       promotionName,
+      itemName,
+      itemId,
       promotionCode,
       description,
       promotionType,
@@ -56,6 +62,14 @@ export const createPromotion = async (req, res) => {
       applicableProducts,
       usageLimit,
     });
+
+    // Update Inventory model to set haveOffer to true
+    await Inventory.updateOne(
+      { _id: itemId }, // Assuming itemId is the ID of the item in the Inventory model
+      { $set: { haveOffer: true } } // Update the haveOffer field
+    );
+
+    // Return the created promotion
     res.status(200).json(promotion);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -132,5 +146,28 @@ export const getPromotionSearch = async (req, res, next) => {
   } catch (error) {
     console.log("err", error);
     next(error);
+  }
+};
+
+// Adjust the path as necessary
+
+export const getOfferbyItemId = async (req, res) => {
+  const { itemId } = req.params; // Get itemId from the request parameters
+
+  try {
+    // Find offers associated with the given itemId
+    const offers = await Promotion.find({ itemId });
+
+    // Check if offers are found
+    if (!offers.length) {
+      return res
+        .status(404)
+        .json({ message: "No offers found for this item." });
+    }
+
+    // Return the found offers
+    res.status(200).json(offers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

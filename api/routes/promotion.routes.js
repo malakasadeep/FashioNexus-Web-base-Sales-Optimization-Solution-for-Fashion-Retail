@@ -9,6 +9,7 @@ import {
   deletePromotion,
   updatePromotion,
   getPromotionSearch,
+  getOfferbyItemId,
 } from "../controllers/promotion.controllers.js";
 
 const router = express.Router();
@@ -30,5 +31,8 @@ router.patch("/:id", updatePromotion);
 
 //SEARCH
 router.get("/search/get", getPromotionSearch);
+
+//GET a promotion by item id
+router.get("/offers/:itemId", getOfferbyItemId);
 
 export default router;

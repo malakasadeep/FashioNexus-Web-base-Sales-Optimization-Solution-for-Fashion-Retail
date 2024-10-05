@@ -159,7 +159,11 @@ export default function ItemsforDiscount() {
                     <motion.button
                       onClick={() =>
                         navigate("/manager/add-discount", {
-                          state: { price: inventory.UnitPrice },
+                          state: {
+                            price: inventory.UnitPrice,
+                            id: inventory._id,
+                            name: inventory.ItemName,
+                          },
                         })
                       }
                       className="bg-DarkColor text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-ExtraDarkColor transition-colors"
