@@ -81,14 +81,22 @@ function DiscountTable() {
         const res = await fetch(`/api/promotions/${promotionId}`, {
           method: "DELETE",
         });
+
+        // Check if response is not OK
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status} ${res.statusText}`);
+        }
+
         const data = await res.json();
-        if (data.success) {
+
+        // Check if response contains success key
+        if (res.status === 200) {
           Swal.fire("Deleted!", "The promotion has been deleted.", "success");
           setPromotions((prev) =>
             prev.filter((promotion) => promotion._id !== promotionId)
           );
         } else {
-          Swal.fire("Error!", data.message, "error");
+          Swal.fire("Error!", data.message || "Unknown error", "error");
         }
       } catch (error) {
         console.error("Error deleting promotion:", error);

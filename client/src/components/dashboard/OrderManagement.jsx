@@ -389,7 +389,9 @@ export default function OrderManagement() {
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
+
           className="text-center bg-white p-10 h-fit w-3/4 max-w-4xl rounded-xl ml-20"
+
           overlayClassName="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 rounded-xl"
         >
           <div
