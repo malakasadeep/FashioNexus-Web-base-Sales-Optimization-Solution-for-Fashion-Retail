@@ -13,8 +13,39 @@ import { PieChart } from "@mui/x-charts/PieChart";
 
 export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState({});
+  const [selectedOrder, setSelectedOrder] = useState({
+    _id: "", // Order ID
+    userId: "", // User ID
+    items: [
+      {
+        itemId: "",
+        quantity: 0,
+        price: 0,
+        title: "",
+        color: "",
+        size: "",
+        img: "",
+      },
+    ],
+    total: 0, // Total amount
+    customerInfo: {
+      name: "",
+      email: "",
+      mobile: "",
+    },
+    deliveryInfo: {
+      address: "",
+      city: "",
+      postalCode: "",
+    },
+    paymentMethod: "", // e.g., 'Card', 'Cash'
+    orderId: "", // Generated Order ID
+    createdAt: "", // Date when the order was placed
+    status: "Pending", // Default status is 'Pending'
+  });
+
   const [filteredOrder, setFilteredOrder] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [dates, setDates] = useState([]);
@@ -195,6 +226,35 @@ export default function OrderManagement() {
       </div>
 
       <div className=" p-8 rounded-lg ">
+        <div
+          className="flex space-x-4 border-b-2 mb-4"
+          style={{ borderColor: "#e3d5ca" }} // SecondaryColor for the border
+        >
+          <div
+            className={`cursor-pointer px-4 py-2 -mb-1 ${
+              activeTab === "all" ? "border-b-4" : "text-gray-500"
+            }`}
+            style={{
+              borderColor: activeTab === "all" ? "#d4a373" : "transparent", // DarkColor for active tab border
+              color: activeTab === "all" ? "#d4a373" : "#a98467", // DarkColor for active tab text, ExtraDarkColor for inactive
+            }}
+            onClick={() => setActiveTab("all")}
+          >
+            All Orders
+          </div>
+          <div
+            className={`cursor-pointer px-4 py-2 -mb-1 ${
+              activeTab === "add" ? "border-b-4" : "text-gray-500"
+            }`}
+            style={{
+              borderColor: activeTab === "add" ? "#d4a373" : "transparent",
+              color: activeTab === "add" ? "#d4a373" : "#a98467",
+            }}
+            onClick={() => setActiveTab("add")}
+          >
+            Pending Orders
+          </div>
+        </div>
         <table className="min-w-full bg-white rounded-md shadow-xl">
           <thead className="bg-black rounded-md">
             <tr>
@@ -241,11 +301,11 @@ export default function OrderManagement() {
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
-          className="text-center bg-white p-10 w-3/4 max-w-4xl rounded-lg ml-20"
-          overlayClassName="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60"
+          className="text-center bg-white p-10 w-3/4 max-w-4xl rounded-xl ml-20"
+          overlayClassName="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 rounded-xl"
         >
           {/* Modal Header */}
-          <h2 className="mb-8 font-bold text-3xl">Order Details</h2>
+          <h2 className="mb-20 font-bold text-3xl">Order Details</h2>
 
           {/* Progress Bar */}
           <div className="w-full mb-10">
@@ -321,60 +381,63 @@ export default function OrderManagement() {
           {/* Order Info */}
           <div className="p-6">
             {/* Order Summary */}
-            <div className="grid grid-cols-2 gap-5 text-left">
-              <div>
-                <h3 className="font-semibold">Order ID:</h3>
-                <p>{selectedOrder.orderId}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Payment Method:</h3>
-                <p>{selectedOrder.paymentMethod}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Total Amount:</h3>
-                <p>${selectedOrder.total}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Order Date:</h3>
-                <p>{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+            <div className="bg-slate-100 rounded-lg p-5">
+              <div className="grid grid-cols-2 gap-5 ">
+                <div className="flex gap-2">
+                  <h3 className="font-semibold">Order ID:</h3>
+                  <p>{selectedOrder.orderId}</p>
+                </div>
+                <div className="flex gap-2">
+                  <h3 className="font-semibold">Payment Method: </h3>
+                  <p>{selectedOrder.paymentMethod}</p>
+                </div>
+                <div className="flex gap-2">
+                  <h3 className="font-semibold">Total Amount:</h3>
+                  <p>${selectedOrder.total}</p>
+                </div>
+                <div className="flex gap-2">
+                  <h3 className="font-semibold">Order Date:</h3>
+                  <p>
+                    {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
             </div>
-
             {/* Customer and Delivery Info (Side by Side) */}
-            <div className="mt-10 grid grid-cols-2 gap-5">
+            <div className="mt-10 grid grid-cols-2 gap-5 text-left">
               {/* Customer Info */}
-              <div>
+              <div className="bg-slate-100 p-2 rounded-lg">
                 <h3 className="font-semibold text-xl mb-3">
                   Customer Information
                 </h3>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">Customer Name:</h4>
                   <p>{selectedOrder.customerInfo.name || "N/A"}</p>
                 </div>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">Email:</h4>
                   <p>{selectedOrder.customerInfo.email || "N/A"}</p>
                 </div>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">Mobile:</h4>
                   <p>{selectedOrder.customerInfo.mobile || "N/A"}</p>
                 </div>
               </div>
 
               {/* Delivery Info */}
-              <div>
+              <div className="bg-slate-100 p-2 rounded-lg">
                 <h3 className="font-semibold text-xl mb-3">
                   Delivery Information
                 </h3>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">Address:</h4>
                   <p>{selectedOrder.deliveryInfo.address || "N/A"}</p>
                 </div>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">City:</h4>
                   <p>{selectedOrder.deliveryInfo.city || "N/A"}</p>
                 </div>
-                <div>
+                <div className="flex gap-2">
                   <h4 className="font-semibold">Postal Code:</h4>
                   <p>{selectedOrder.deliveryInfo.postalCode || "N/A"}</p>
                 </div>
