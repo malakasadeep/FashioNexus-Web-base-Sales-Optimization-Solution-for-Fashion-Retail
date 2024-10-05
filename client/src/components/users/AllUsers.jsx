@@ -3,7 +3,14 @@ import axios from "axios";
 import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaSearch, FaDownload, FaUserPlus, FaTrash } from "react-icons/fa";
+import {
+  FaSearch,
+  FaDownload,
+  FaUserPlus,
+  FaTrash,
+  FaUser,
+  FaUsers,
+} from "react-icons/fa";
 import {
   PDFDownloadLink,
   Document,
@@ -14,13 +21,33 @@ import {
 } from "@react-pdf/renderer";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { Pie } from "react-chartjs-2";
 import AddUserPopup from "./AddUserPopup";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [reportType, setReportType] = useState("csv");
+
+  // For pie chart data
+  const managerCount = users.filter((user) => user.ismanager).length;
+  const customerCount = users.length - managerCount;
+
+  const pieData = {
+    labels: ["Managers", "Customers"],
+    datasets: [
+      {
+        label: "# of Users",
+        data: [managerCount, customerCount],
+        backgroundColor: ["#d4a373", "#a98467"],
+        hoverBackgroundColor: ["#e3d5ca", "#f5ebe0"],
+      },
+    ],
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -152,47 +179,33 @@ const AllUsers = () => {
         <Text style={styles.title}>Users Report</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>First Name</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Last Name</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Username</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Email</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>User Type</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Is Manager</Text>
-            </View>
+            {[
+              "First Name",
+              "Last Name",
+              "Username",
+              "Email",
+              "User Type",
+              "Is Manager",
+            ].map((header, index) => (
+              <View key={index} style={styles.tableCol}>
+                <Text style={styles.tableCell}>{header}</Text>
+              </View>
+            ))}
           </View>
           {filteredUsers.map((user) => (
             <View style={styles.tableRow} key={user._id}>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{user.firstname}</Text>
-              </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{user.lastname}</Text>
-              </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{user.username}</Text>
-              </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{user.email}</Text>
-              </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{user.usertype}</Text>
-              </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>
-                  {user.ismanager ? "Yes" : "No"}
-                </Text>
-              </View>
+              {[
+                "firstname",
+                "lastname",
+                "username",
+                "email",
+                "usertype",
+                user.ismanager ? "Yes" : "No",
+              ].map((field, index) => (
+                <View key={index} style={styles.tableCol}>
+                  <Text style={styles.tableCell}>{user[field]}</Text>
+                </View>
+              ))}
             </View>
           ))}
         </View>
@@ -207,21 +220,45 @@ const AllUsers = () => {
       exit={{ opacity: 0 }}
       className="p-6 bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] rounded-lg"
     >
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+      {/* Count Cards */}
+      <div className="flex justify-between items-center mb-6 space-x-4">
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="relative w-full md:w-1/3 mb-4 md:mb-0"
+          className="flex w-full md:w-1/3"
         >
-          <input
-            type="text"
-            placeholder="Search users..."
-            className="w-full p-3 pl-10 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <div className="flex space-x-4 w-full">
+            {/* Total Users Card */}
+            <motion.div
+              className="flex items-center justify-between p-4 bg-white shadow-lg rounded-lg w-full"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="flex items-center">
+                <FaUsers className="text-[#d4a373] mr-3 text-3xl" />
+                <div>
+                  <p className="text-lg font-semibold">Total Users</p>
+                  <p className="text-gray-500">{users.length}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Customers Card */}
+            <motion.div
+              className="flex items-center justify-between p-4 bg-white shadow-lg rounded-lg w-full"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="flex items-center">
+                <FaUser className="text-[#d4a373] mr-3 text-3xl" />
+                <div>
+                  <p className="text-lg font-semibold">Customers</p>
+                  <p className="text-gray-500">{customerCount}</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
         <motion.div
           initial={{ x: 50, opacity: 0 }}
@@ -242,7 +279,7 @@ const AllUsers = () => {
               document={<MyDocument />}
               fileName="users_report.pdf"
             >
-              {({ blob, url, loading, error }) => (
+              {({ loading }) => (
                 <button
                   className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
                   disabled={loading}
@@ -327,6 +364,18 @@ const AllUsers = () => {
             </AnimatePresence>
           </tbody>
         </table>
+      </motion.div>
+
+      {/* Pie Chart at Bottom Right */}
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="flex justify-end mt-6"
+      >
+        <div className="w-1/3 p-4 bg-white shadow-lg rounded-lg">
+          <Pie data={pieData} />
+        </div>
       </motion.div>
 
       {isAddUserOpen && (
