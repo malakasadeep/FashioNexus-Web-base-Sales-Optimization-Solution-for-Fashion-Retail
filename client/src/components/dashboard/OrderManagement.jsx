@@ -12,6 +12,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import SalesReport from "./SalesReport";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { init, send } from "emailjs-com";
 
 export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
@@ -52,6 +53,8 @@ export default function OrderManagement() {
   const [filteredOrder, setFilteredOrder] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [dates, setDates] = useState([]);
+
+  init("jm1C0XkEa3KYwvYK0");
 
   // const pData = [2, 1, 9, 3, 4, 3, 2];
 
@@ -155,7 +158,8 @@ export default function OrderManagement() {
     getDate(5),
     getDate(6),
   ];
-  const handleStatusChange = (id, newStatus) => {
+
+  const handleStatusChange = (order, id, newStatus) => {
     Swal.fire({
       title: "Do you want to save the changes?",
       showDenyButton: true,
@@ -169,6 +173,11 @@ export default function OrderManagement() {
             `http://localhost:3000/api/order/status/${id}`,
             { status: newStatus }
           );
+          await send("service_fjpvjh9", "template_1x528d6", {
+            to_email: order.customerInfo.email,
+            status: newStatus,
+          });
+          Swal.fire("Email Sent Sucessfully", "", "success");
           Swal.fire("Saved!", "", "success");
           window.location.reload();
         } catch (error) {
@@ -327,7 +336,7 @@ export default function OrderManagement() {
                       className="p-2 bg-PrimaryColor rounded"
                       value={order.status}
                       onChange={(e) =>
-                        handleStatusChange(order._id, e.target.value)
+                        handleStatusChange(order, order._id, e.target.value)
                       }
                     >
                       <option value="Pending">Pending</option>
@@ -389,9 +398,7 @@ export default function OrderManagement() {
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
-
           className="text-center bg-white p-10 h-fit w-3/4 max-w-4xl rounded-xl ml-20"
-
           overlayClassName="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 rounded-xl"
         >
           <div
