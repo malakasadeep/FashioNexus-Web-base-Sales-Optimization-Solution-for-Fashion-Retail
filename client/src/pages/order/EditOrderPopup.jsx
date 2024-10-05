@@ -35,7 +35,7 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
       };
 
       const response = await axios.put(
-        `/api/orders/update/${order._id}`,
+        `/api/order/update/${order._id}`,
         updatedOrder
       );
 

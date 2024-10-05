@@ -15,7 +15,7 @@ const FashionItem = () => {
   const { currentUser } = useSelector((state) => state.user); // Get user from Redux
 
   // State hooks
-  const [fashionItem, setFashionItem] = useState(null);
+  const [fashionItem, setFashionItem] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -87,7 +87,7 @@ const FashionItem = () => {
         userId: currentUser._id,
         itemId: id,
         title: fashionItem.ItemName,
-        img: fashionItem.imageUrls[0],
+        img: fashionItem.imageUrls[0] || "",
         price: fashionItem.UnitPrice,
         quantity,
         size: selectedSize,
