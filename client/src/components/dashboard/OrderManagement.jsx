@@ -223,14 +223,14 @@ export default function OrderManagement() {
       >
         {({ loading }) => (
           <button
-            className="bg-black text-white px-4 py-2 rounded-md shadow hover:bg-ExtraDarkColor transition-colors duration-300"
+            className="bg-black text-white px-4 py-2 rounded-md shadow hover:bg-ExtraDarkColor transition-colors duration-300 ml-5"
             disabled={loading}
           >
             {loading ? "Generating PDF..." : "Generate Report"}
           </button>
         )}
       </PDFDownloadLink>
-      <div className="flex">
+      <div className="flex ">
         <div ref={chartRef}>
           <LineChart
             width={600}
@@ -426,7 +426,7 @@ export default function OrderManagement() {
                         <Lottie
                           animationData={animationData}
                           loop={accomplished}
-                          className="h-10 w-10"
+                          className="h-40 w-30"
                         />
                       </div>
                       <p className="mt-2 text-sm">Pending</p>
@@ -444,7 +444,7 @@ export default function OrderManagement() {
                         <Lottie
                           animationData={animationData1}
                           loop={accomplished}
-                          className="h-10 w-10"
+                          className="h-40 w-30"
                         />
                       </div>
                       <p className="mt-2 text-sm">Shipped</p>
@@ -462,7 +462,7 @@ export default function OrderManagement() {
                         <Lottie
                           animationData={animationData1}
                           loop={accomplished}
-                          className="h-10 w-10"
+                          className="h-40 w-30"
                         />
                       </div>
                       <p className="mt-2 text-sm">Delivered</p>

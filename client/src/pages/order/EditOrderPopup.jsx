@@ -133,8 +133,9 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                   className="border border-secondaryColor p-4 mb-4 rounded-lg"
                 >
                   <h4 className="font-semibold mb-2 text-darkColor">
-                    {item.title}
+                    Item Name: {item.title}
                   </h4>
+                  <label>Size: </label>
                   <input
                     type="text"
                     value={item.size || ""}
@@ -144,13 +145,14 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                     className="w-full p-3 border border-secondaryColor rounded mb-2"
                     placeholder="Size"
                   />
+                  <label>Color: </label>
                   <input
-                    type="text"
+                    type="color"
                     value={item.color || ""}
                     onChange={(e) =>
                       handleItemChange(index, "color", e.target.value)
                     }
-                    className="w-full p-3 border border-secondaryColor rounded mb-2"
+                    className="w-6 h-6 border border-none rounded-3xl"
                     placeholder="Color"
                   />
                 </div>

@@ -9,6 +9,11 @@ import EditOrderPopup from "./EditOrderPopup";
 import { useSelector } from "react-redux";
 import Invoice from "./Invoice";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import "react-step-progress-bar/styles.css";
+import { ProgressBar, Step } from "react-step-progress-bar";
+import Lottie from "lottie-react";
+import animationData from "../../assets/img/worker-packing-the-goods.json";
+import animationData1 from "../../assets/img/deliveryman-riding-scooter.json";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -81,6 +86,7 @@ const MyOrders = () => {
       ...prevState,
       [orderId]: !prevState[orderId],
     }));
+    console.log(expandedOrders);
   };
 
   const filteredOrders = orders.filter((order) =>
@@ -165,6 +171,81 @@ const MyOrders = () => {
                   {/* Expanded View */}
                   {expandedOrders[order._id] && (
                     <div className="mt-4">
+                      <div className="w-full mt-10 mb-10 p-10">
+                        <ProgressBar
+                          percent={
+                            order.status === "Pending"
+                              ? 0
+                              : order.status === "Shipped"
+                              ? 50
+                              : order.status === "Delivered"
+                              ? 100
+                              : 0
+                          }
+                          filledBackground="linear-gradient(to right, #00A896, #028090)"
+                        >
+                          <Step>
+                            {({ accomplished }) => (
+                              <div className="flex flex-col items-center">
+                                <div
+                                  className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                                    accomplished
+                                      ? "bg-green-500"
+                                      : "bg-gray-300"
+                                  }`}
+                                >
+                                  <Lottie
+                                    animationData={animationData}
+                                    loop={accomplished}
+                                    className="h-10 w-10"
+                                  />
+                                </div>
+                                <p className="mt-2 text-sm">Pending</p>
+                              </div>
+                            )}
+                          </Step>
+                          <Step>
+                            {({ accomplished }) => (
+                              <div className="flex flex-col items-center">
+                                <div
+                                  className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                                    accomplished
+                                      ? "bg-green-500"
+                                      : "bg-gray-300"
+                                  }`}
+                                >
+                                  <Lottie
+                                    animationData={animationData1}
+                                    loop={accomplished}
+                                    className="h-10 w-10"
+                                  />
+                                </div>
+                                <p className="mt-2 text-sm">Shipped</p>
+                              </div>
+                            )}
+                          </Step>
+                          <Step>
+                            {({ accomplished }) => (
+                              <div className="flex flex-col items-center">
+                                <div
+                                  className={`bg-gray-300 rounded-full h-14 w-14 flex justify-center items-center ${
+                                    accomplished
+                                      ? "bg-green-500"
+                                      : "bg-gray-300"
+                                  }`}
+                                >
+                                  <Lottie
+                                    animationData={animationData1}
+                                    loop={accomplished}
+                                    className="h-10 w-10"
+                                  />
+                                </div>
+                                <p className="mt-2 text-sm">Delivered</p>
+                              </div>
+                            )}
+                          </Step>
+                        </ProgressBar>
+                      </div>
                       <div className="flex flex-row items-start justify-between gap-8 border-t pt-4">
                         {/* Items Section */}
                         <div className="flex-1 pr-4 border-r border-gray-300">
@@ -212,12 +293,7 @@ const MyOrders = () => {
                               <p>Delivery Method: Delivery</p>
                             </div>
                           ) : (
-                            <div>
-                              <h3 className="text-lg font-semibold mb-2">
-                                Dine-in Information:
-                              </h3>
-                              <p>Dine-in Method: Dine-In</p>
-                            </div>
+                            <div></div>
                           )}
                         </div>
                       </div>
