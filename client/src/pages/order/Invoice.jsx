@@ -107,9 +107,10 @@ const Invoice = ({ expandedOrders }) => {
 
         {/* Item List */}
         <View style={styles.tableHeader}>
-          <Text style={styles.tableHeaderText}>Package Name</Text>
-          <Text style={styles.tableHeaderText}>Price (USD)</Text>
-          <Text style={styles.tableHeaderText}>Services Included</Text>
+          <Text style={styles.tableHeaderText}>Item Name</Text>
+          <Text style={styles.tableHeaderText}>Quantity</Text>
+          <Text style={styles.tableHeaderText}>Size</Text>
+          <Text style={styles.tableHeaderText}>Price (Rs.)</Text>
         </View>
 
         {/* Table Rows */}
@@ -118,11 +119,12 @@ const Invoice = ({ expandedOrders }) => {
             key={index}
             style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
           >
-            <Text style={styles.tableCell}>{item.itemName}</Text>
+            <Text style={styles.tableCell}>{item.title}</Text>
+            <Text style={styles.tableCell}>{item.quantity}</Text>
+            <Text style={styles.tableCell}>{item.size}</Text>
             <Text style={styles.tableCell}>
               ${Number(item.price || 0).toFixed(2)}
             </Text>
-            <Text style={styles.tableCell}>{item.exp}</Text>
           </View>
         ))}
 
