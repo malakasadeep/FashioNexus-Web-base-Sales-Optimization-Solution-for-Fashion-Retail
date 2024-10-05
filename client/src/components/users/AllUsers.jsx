@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
@@ -8,46 +8,34 @@ import {
   FaDownload,
   FaUserPlus,
   FaTrash,
-  FaUser,
   FaUsers,
+  FaUserTie,
+  FaChartPie,
 } from "react-icons/fa";
-import {
-  PDFDownloadLink,
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-} from "@react-pdf/renderer";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { Pie } from "react-chartjs-2";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import html2canvas from "html2canvas";
 import AddUserPopup from "./AddUserPopup";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [reportType, setReportType] = useState("csv");
-
-  // For pie chart data
-  const managerCount = users.filter((user) => user.ismanager).length;
-  const customerCount = users.length - managerCount;
-
-  const pieData = {
-    labels: ["Managers", "Customers"],
-    datasets: [
-      {
-        label: "# of Users",
-        data: [managerCount, customerCount],
-        backgroundColor: ["#d4a373", "#a98467"],
-        hoverBackgroundColor: ["#e3d5ca", "#f5ebe0"],
-      },
-    ],
-  };
+  const [userCounts, setUserCounts] = useState({
+    total: 0,
+    customers: 0,
+    managers: 0,
+  });
+  const chartRef = useRef(null);
 
   useEffect(() => {
     fetchUsers();
@@ -57,10 +45,20 @@ const AllUsers = () => {
     try {
       const response = await axios.get("/api/user/all-Users");
       setUsers(response.data);
+      calculateUserCounts(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
       Swal.fire("Error!", "Failed to fetch users.", "error");
     }
+  };
+
+  const calculateUserCounts = (userData) => {
+    const counts = {
+      total: userData.length,
+      customers: userData.filter((user) => user.usertype === "customer").length,
+      managers: userData.filter((user) => user.ismanager).length,
+    };
+    setUserCounts(counts);
   };
 
   const deleteUser = async (id) => {
@@ -112,9 +110,86 @@ const AllUsers = () => {
     saveAs(blob, "users_report.csv");
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
+  const downloadPDF = async () => {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    // Header
+    doc
+      .setFont("helvetica", "normal")
+      .setFontSize(28)
+      .setTextColor(169, 132, 109);
+    doc.text("FashioNexus", 105, 20, { align: "center" });
+
+    doc.setFont("helvetica", "normal").setFontSize(18).setTextColor(0, 0, 0);
+    doc.text("User Details Report", 105, 30, { align: "center" });
+
+    // Subheader
+    doc.setFontSize(10).setTextColor(100, 100, 100);
+    doc.text("FashioNexus.co, Galle Road, Colombo, Sri Lanka", 105, 38, {
+      align: "center",
+    });
+
+    // Separator line
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 42, 190, 42);
+
+    // Date
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    doc.setFontSize(10).setTextColor(100, 100, 100);
+    doc.text(`Generated on: ${currentDate}`, 20, 48);
+
+    // User Count Cards
+    const cardY = 60;
+    const cardWidth = 50;
+    const cardHeight = 25;
+    const cardSpacing = 5;
+
+    const drawCard = (x, y, title, count) => {
+      doc.setFillColor(245, 235, 224); // Using custom colors
+      doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, "F");
+      doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
+      doc.text(title, x + cardWidth / 2, y + 8, { align: "center" });
+      doc.setFontSize(14).setTextColor(169, 132, 109);
+      doc.text(count.toString(), x + cardWidth / 2, y + 20, {
+        align: "center",
+      });
+    };
+
+    // Example userCounts data
+    const userCounts = { total: 5, customers: 4, managers: 1 };
+
+    drawCard(20, cardY, "Total Users", userCounts.total);
+    drawCard(
+      20 + cardWidth + cardSpacing,
+      cardY,
+      "Customers",
+      userCounts.customers
+    );
+    drawCard(
+      20 + (cardWidth + cardSpacing) * 2,
+      cardY,
+      "Managers",
+      userCounts.managers
+    );
+
+    // Generate Pie Chart image (assuming you have a reference to a chart, e.g., `chartRef`)
+    if (chartRef.current) {
+      const canvas = await html2canvas(chartRef.current); // Requires html2canvas
+      const imgData = canvas.toDataURL("image/png");
+      doc.addImage(imgData, "PNG", 70, 100, 90, 70);
+    }
+
+    // Add table with user data
     doc.autoTable({
+      startY: cardY + cardHeight + 100,
       head: [
         [
           "First Name",
@@ -133,8 +208,29 @@ const AllUsers = () => {
         user.usertype,
         user.ismanager ? "Yes" : "No",
       ]),
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [212, 163, 115], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 235, 224] },
     });
-    doc.save("users_report.pdf");
+
+    // Footer (Page numbering)
+    const pageCount = doc.internal.getNumberOfPages();
+    doc
+      .setFont("helvetica", "normal")
+      .setFontSize(8)
+      .setTextColor(100, 100, 100);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: "center" }
+      );
+    }
+
+    // Save the PDF
+    doc.save("FashioNexus_User_Report.pdf");
   };
 
   const handleDownload = () => {
@@ -151,67 +247,63 @@ const AllUsers = () => {
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const styles = StyleSheet.create({
-    page: { padding: 30 },
-    title: { fontSize: 24, marginBottom: 30 },
-    table: {
-      display: "table",
-      width: "auto",
-      borderStyle: "solid",
-      borderWidth: 1,
-      borderRightWidth: 0,
-      borderBottomWidth: 0,
-    },
-    tableRow: { margin: "auto", flexDirection: "row" },
-    tableCol: {
-      width: "16.6%",
-      borderStyle: "solid",
-      borderWidth: 1,
-      borderLeftWidth: 0,
-      borderTopWidth: 0,
-    },
-    tableCell: { margin: "auto", marginTop: 5, fontSize: 10 },
-  });
-
-  const MyDocument = () => (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Users Report</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            {[
-              "First Name",
-              "Last Name",
-              "Username",
-              "Email",
-              "User Type",
-              "Is Manager",
-            ].map((header, index) => (
-              <View key={index} style={styles.tableCol}>
-                <Text style={styles.tableCell}>{header}</Text>
-              </View>
-            ))}
-          </View>
-          {filteredUsers.map((user) => (
-            <View style={styles.tableRow} key={user._id}>
-              {[
-                "firstname",
-                "lastname",
-                "username",
-                "email",
-                "usertype",
-                user.ismanager ? "Yes" : "No",
-              ].map((field, index) => (
-                <View key={index} style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{user[field]}</Text>
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      </Page>
-    </Document>
+  const CountCard = ({ title, count, icon }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 w-64"
+    >
+      <div className="bg-[#d4a373] p-3 rounded-full">{icon}</div>
+      <div>
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-2xl font-bold">{count}</p>
+      </div>
+    </motion.div>
   );
+
+  const UserDistributionChart = () => {
+    const data = [
+      { name: "Managers", value: userCounts.managers },
+      { name: "Customers", value: userCounts.customers },
+    ];
+    const COLORS = ["#d4a373", "#a98467"];
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white p-4 rounded-lg shadow-md"
+      >
+        <h3 className="text-lg font-semibold mb-4">User Distribution</h3>
+        <div ref={chartRef}>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <motion.div
@@ -220,46 +312,51 @@ const AllUsers = () => {
       exit={{ opacity: 0 }}
       className="p-6 bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] rounded-lg"
     >
-      {/* Count Cards */}
-      <div className="flex justify-between items-center mb-6 space-x-4">
+      {/* Summary Cards and Chart */}
+      <div className="md:grid md:grid-cols-3 gap-1 justify-center">
+        {/* Column for Count Cards */}
+        <div className="md:col-span-2 space-y-4">
+          <CountCard
+            title="Total Users"
+            count={userCounts.total}
+            icon={<FaUsers className="text-white text-2xl" />}
+          />
+          <CountCard
+            title="Customers"
+            count={userCounts.customers}
+            icon={<FaUserTie className="text-white text-2xl" />}
+          />
+          <CountCard
+            title="Managers"
+            count={userCounts.managers}
+            icon={<FaChartPie className="text-white text-2xl" />}
+          />
+        </div>
+
+        {/* Column for User Distribution Chart */}
+        <div className="md:col-span-1">
+          <UserDistributionChart />
+        </div>
+      </div>
+
+      {/* Search and Actions */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4 mt-8">
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="flex w-full md:w-1/3"
+          className="relative w-full md:w-1/3"
         >
-          <div className="flex space-x-4 w-full">
-            {/* Total Users Card */}
-            <motion.div
-              className="flex items-center justify-between p-4 bg-white shadow-lg rounded-lg w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="flex items-center">
-                <FaUsers className="text-[#d4a373] mr-3 text-3xl" />
-                <div>
-                  <p className="text-lg font-semibold">Total Users</p>
-                  <p className="text-gray-500">{users.length}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Customers Card */}
-            <motion.div
-              className="flex items-center justify-between p-4 bg-white shadow-lg rounded-lg w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="flex items-center">
-                <FaUser className="text-[#d4a373] mr-3 text-3xl" />
-                <div>
-                  <p className="text-lg font-semibold">Customers</p>
-                  <p className="text-gray-500">{customerCount}</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <input
+            type="text"
+            placeholder="Search users..."
+            className="w-full p-3 pl-10 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </motion.div>
+
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -274,30 +371,13 @@ const AllUsers = () => {
             <option value="csv">CSV</option>
             <option value="pdf">PDF</option>
           </select>
-          {reportType === "pdf" ? (
-            <PDFDownloadLink
-              document={<MyDocument />}
-              fileName="users_report.pdf"
-            >
-              {({ loading }) => (
-                <button
-                  className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
-                  disabled={loading}
-                >
-                  <FaDownload className="mr-2" />
-                  {loading ? "Loading document..." : "Download Report"}
-                </button>
-              )}
-            </PDFDownloadLink>
-          ) : (
-            <button
-              onClick={handleDownload}
-              className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
-            >
-              <FaDownload className="mr-2" />
-              Download Report
-            </button>
-          )}
+          <button
+            onClick={handleDownload}
+            className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
+          >
+            <FaDownload className="mr-2" />
+            Download Report
+          </button>
           <button
             onClick={() => setIsAddUserOpen(true)}
             className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
@@ -308,6 +388,7 @@ const AllUsers = () => {
         </motion.div>
       </div>
 
+      {/* User Table */}
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -366,18 +447,7 @@ const AllUsers = () => {
         </table>
       </motion.div>
 
-      {/* Pie Chart at Bottom Right */}
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="flex justify-end mt-6"
-      >
-        <div className="w-1/3 p-4 bg-white shadow-lg rounded-lg">
-          <Pie data={pieData} />
-        </div>
-      </motion.div>
-
+      {/* Add User Popup */}
       {isAddUserOpen && (
         <AddUserPopup
           closePopup={() => setIsAddUserOpen(false)}
