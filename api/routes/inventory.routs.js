@@ -7,12 +7,13 @@ import {
   deleteInventory,
   updateInventory,
   getInventorySearch,
+  getInventorieswithOffers,
 } from "../controllers/inventory.controller.js";
 
 const router = express.Router();
 
 //GET all inventories
-router.get("/", getInventories);
+router.get("/all-offers", getInventorieswithOffers);
 
 //GET a single inventory
 router.get("/:id", getInventory);

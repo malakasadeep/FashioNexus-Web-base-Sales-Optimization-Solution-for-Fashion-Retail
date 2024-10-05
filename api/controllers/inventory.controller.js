@@ -115,3 +115,26 @@ export const getInventorySearch = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getInventorieswithOffers = async (req, res) => {
+  try {
+    // Find inventories where haveOffer is true and sort by createdAt in descending order
+    const inventories = await Inventory.find({ haveOffer: true }).sort({
+      createdAt: -1,
+    });
+
+    // Check if any inventories were found
+    if (!inventories.length) {
+      return res
+        .status(404)
+        .json({ message: "No inventories found with offers." });
+    }
+
+    res.status(200).json(inventories);
+  } catch (error) {
+    console.error("Error fetching inventories:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching inventories." });
+  }
+};

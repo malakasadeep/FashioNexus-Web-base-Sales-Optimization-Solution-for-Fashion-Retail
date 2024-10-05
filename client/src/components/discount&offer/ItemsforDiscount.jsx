@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { FaSearch, FaTag } from "react-icons/fa";
+import { FaSearch, FaSpinner, FaTag } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdImageNotSupported } from "react-icons/md";
+import { BiErrorCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
 
 export default function ItemsforDiscount() {
@@ -40,6 +41,19 @@ export default function ItemsforDiscount() {
       inventory.ItemName.toLowerCase().includes(query)
     );
     setFilteredInventories(filtered);
+  };
+
+  // Handle the "Add Discount" button click
+  const handleAddDiscount = (inventory) => {
+    if (!inventory.haveOffer) {
+      navigate("/manager/add-discount", {
+        state: {
+          price: inventory.UnitPrice,
+          id: inventory._id,
+          name: inventory.ItemName,
+        },
+      });
+    }
   };
 
   return (
@@ -90,14 +104,12 @@ export default function ItemsforDiscount() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {loading && (
+          {loading ? (
             <div className="flex flex-col items-center justify-center">
-              <AiOutlineLoading3Quarters className="animate-spin text-5xl text-DarkColor" />
+              <FaSpinner className="animate-spin text-DarkColor text-5xl" />
               <p className="text-lg w-full text-center mt-4">Loading...</p>
             </div>
-          )}
-
-          {!loading && filteredInventories.length === 0 && (
+          ) : filteredInventories.length === 0 ? (
             <motion.p
               className="text-2xl text-center p-5 text-blue-950"
               initial={{ opacity: 0 }}
@@ -106,78 +118,84 @@ export default function ItemsforDiscount() {
             >
               No Inventories Found
             </motion.p>
-          )}
-
-          {/* Table */}
-          <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-            <thead className="bg-DarkColor text-white">
-              <tr>
-                <th className="text-left px-4 py-3 font-semibold">Image</th>
-                <th className="text-left px-4 py-3 font-semibold">Item Name</th>
-                <th className="text-left px-4 py-3 font-semibold">Price</th>
-                <th className="text-left px-4 py-3 font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInventories.map((inventory, index) => (
-                <motion.tr
-                  key={inventory._id}
-                  className="hover:bg-PrimaryColor transition-colors"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.1,
-                    ease: "easeOut",
-                  }}
-                >
-                  <motion.td
-                    className="text-left px-4 py-4"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
+          ) : (
+            <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
+              <thead className="bg-DarkColor text-white">
+                <tr>
+                  <th className="text-left px-4 py-3 font-semibold">Image</th>
+                  <th className="text-left px-4 py-3 font-semibold">
+                    Item Name
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold">Price</th>
+                  <th className="text-left px-4 py-3 font-semibold">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredInventories.map((inventory, index) => (
+                  <motion.tr
+                    key={inventory._id}
+                    className="hover:bg-PrimaryColor transition-colors"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.1,
+                      ease: "easeOut",
+                    }}
                   >
-                    {inventory.imageUrls ? (
-                      <img
-                        src={
-                          inventory.imageUrls[inventory.imageUrls.length - 1]
-                        }
-                        alt={inventory.ItemName}
-                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
-                      />
-                    ) : (
-                      <MdImageNotSupported className="text-3xl text-gray-500" />
-                    )}
-                  </motion.td>
-                  <td className="text-left px-4 py-4 font-medium text-gray-800">
-                    {inventory.ItemName}
-                  </td>
-                  <td className="text-left px-4 py-4 text-gray-800">
-                    ${inventory.UnitPrice}.00
-                  </td>
-                  <td className="text-left px-4 py-4">
-                    <motion.button
-                      onClick={() =>
-                        navigate("/manager/add-discount", {
-                          state: {
-                            price: inventory.UnitPrice,
-                            id: inventory._id,
-                            name: inventory.ItemName,
-                          },
-                        })
-                      }
-                      className="bg-DarkColor text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-ExtraDarkColor transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
+                    <motion.td
+                      className="text-left px-4 py-4"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <FaTag />
-                      Add Discount
-                    </motion.button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+                      {inventory.imageUrls ? (
+                        <img
+                          src={
+                            inventory.imageUrls[inventory.imageUrls.length - 1]
+                          }
+                          alt={inventory.ItemName}
+                          className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                        />
+                      ) : (
+                        <MdImageNotSupported className="text-3xl text-gray-500" />
+                      )}
+                    </motion.td>
+                    <td className="text-left px-4 py-4 font-medium text-gray-800">
+                      {inventory.ItemName}
+                    </td>
+                    <td className="text-left px-4 py-4 text-gray-800">
+                      ${inventory.UnitPrice}.00
+                    </td>
+                    <td className="text-left px-4 py-4">
+                      <motion.button
+                        onClick={() => handleAddDiscount(inventory)}
+                        className={`bg-DarkColor text-white px-4 py-2 rounded-md flex items-center gap-2 ${
+                          inventory.haveOffer
+                            ? "cursor-not-allowed bg-SecondaryColor"
+                            : ""
+                        }`}
+                        whileHover={{
+                          scale: inventory.haveOffer ? 1 : 1.05,
+                        }}
+                        transition={{ duration: 0.2 }}
+                        disabled={inventory.haveOffer}
+                      >
+                        <FaTag />
+                        Add Discount
+                      </motion.button>
+                      {inventory.haveOffer && (
+                        <div className="text-red-500 flex items-center gap-1 mt-2">
+                          <BiErrorCircle />
+                          <span>This item already has an offer</span>
+                        </div>
+                      )}
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </motion.div>
       </motion.div>
     </>
