@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -10,11 +10,14 @@ import animationData from "../../assets/img/worker-packing-the-goods.json";
 import animationData1 from "../../assets/img/deliveryman-riding-scooter.json";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts/PieChart";
+import SalesReport from "./SalesReport";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [chartImage, setChartImage] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState({
     _id: "", // Order ID
     userId: "", // User ID
@@ -52,6 +55,8 @@ export default function OrderManagement() {
 
   // const pData = [2, 1, 9, 3, 4, 3, 2];
 
+  const chartRef = useRef();
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -78,6 +83,38 @@ export default function OrderManagement() {
     const formattedDate = today.toLocaleDateString("en-CA", options);
     console.log(formattedDate);
     return formattedDate;
+  };
+
+  const handleGenerateImage = async () => {
+    const svg = chartRef.current?.container.children[0]; // Ensure chart is accessible
+    if (!svg) {
+      console.error("Chart not found!");
+      return;
+    }
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const imgURL = canvas.toDataURL("image/png");
+
+      // Check the generated imgURL
+      console.log("Generated Image URL: ", imgURL);
+
+      // Call function to generate PDF
+      generatePDF(imgURL); // Ensure this function handles PDF generation
+    };
+
+    img.onerror = (error) => {
+      console.error("Error loading image: ", error);
+    };
   };
 
   const getDate = (x) => {
@@ -149,6 +186,7 @@ export default function OrderManagement() {
       item.orderId.toLowerCase().includes(searchValue.toLowerCase())
     );
     setFilteredOrder(serchOrder);
+    handleGenerateImage;
   }, [searchValue, orders]);
 
   const openCard = (order) => {
@@ -179,9 +217,21 @@ export default function OrderManagement() {
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
       />
+      <PDFDownloadLink
+        document={<SalesReport expandedOrders={filteredOrder} />}
+        fileName="filtered-orders.pdf"
+      >
+        {({ loading }) => (
+          <button
+            className="bg-black text-white px-4 py-2 rounded-md shadow hover:bg-ExtraDarkColor transition-colors duration-300"
+            disabled={loading}
+          >
+            {loading ? "Generating PDF..." : "Generate Report"}
+          </button>
+        )}
+      </PDFDownloadLink>
       <div className="flex">
-        <div>
-          <h2>Monthly Orders</h2>
+        <div ref={chartRef}>
           <LineChart
             width={600}
             height={300}
@@ -266,37 +316,75 @@ export default function OrderManagement() {
               <th className="p-4 text-left text-white">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {filteredOrder.map((order) => (
-              <tr key={order._id} className="hover:bg-slate-200">
-                <td className="p-4">{order.orderId}</td>
-                <td className="p-4">{order.customerInfo.name}</td>
-                <td className="p-4">
-                  <select
-                    className="p-2 bg-PrimaryColor rounded"
-                    value={order.status}
-                    onChange={(e) =>
-                      handleStatusChange(order._id, e.target.value)
-                    }
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Delivered">Delivered</option>
-                  </select>
-                </td>
-                <td className="p-4">{order.total}</td>
-                <td className="p-4">{order.createdAt.split("T")[0]}</td>
-                <td className="p-4">
-                  <button
-                    className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition "
-                    onClick={(e) => openCard(order)}
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          {activeTab === "all" ? (
+            <tbody>
+              {filteredOrder.map((order) => (
+                <tr key={order._id} className="hover:bg-slate-200">
+                  <td className="p-4">{order.orderId}</td>
+                  <td className="p-4">{order.customerInfo.name}</td>
+                  <td className="p-4">
+                    <select
+                      className="p-2 bg-PrimaryColor rounded"
+                      value={order.status}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                    </select>
+                  </td>
+                  <td className="p-4">{order.total}</td>
+                  <td className="p-4">{order.createdAt.split("T")[0]}</td>
+                  <td className="p-4">
+                    <button
+                      className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition "
+                      onClick={(e) => openCard(order)}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ) : activeTab === "add" ? (
+            <tbody>
+              {filteredOrder
+                .filter((order) => order.status === "Pending")
+                .map((order) => (
+                  <tr key={order._id} className="hover:bg-slate-200">
+                    <td className="p-4">{order.orderId}</td>
+                    <td className="p-4">{order.customerInfo.name}</td>
+                    <td className="p-4">
+                      <select
+                        className="p-2 bg-PrimaryColor rounded"
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(order._id, e.target.value)
+                        }
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                    </td>
+                    <td className="p-4">{order.total}</td>
+                    <td className="p-4">{order.createdAt.split("T")[0]}</td>
+                    <td className="p-4">
+                      <button
+                        className="bg-DarkColor text-white p-2 rounded hover:bg-ExtraDarkColor transition "
+                        onClick={(e) => openCard(order)}
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          ) : (
+            <div></div>
+          )}
         </table>
         <Modal
           isOpen={isModalOpen}
