@@ -63,10 +63,10 @@ FashioNexus-Web-base-Sales-Optimization-Solution-for-Fashion-Retail/
 ### Local Installation
 
 1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/malakasadeep/FashioNexus-Web-base-Sales-Optimization-Solution-for-Fashion-Retail.git
-   cd FashioNexus-Web-base-Sales-Optimization-Solution-for-Fashion-Retail
-   ```
+ ```bash
+ git clone https://github.com/malakasadeep/FashioNexus-Web-base-Sales-Optimization-Solution-for-Fashion-Retail.git
+ cd FashioNexus-Web-base-Sales-Optimization-Solution-for-Fashion-Retail
+ ```
 ## 📦 Install Dependencies
 
 After cloning the repository, navigate to each directory to install the required dependencies.
