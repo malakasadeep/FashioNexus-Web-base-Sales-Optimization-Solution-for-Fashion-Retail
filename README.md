@@ -119,7 +119,8 @@ npm run dev
 ### 3. Start ML API (Flask)
 ```bash
 cd ../prdictionAPI
-flask run
+venv/bin/activate
+py server.py 
 ```
 
 
