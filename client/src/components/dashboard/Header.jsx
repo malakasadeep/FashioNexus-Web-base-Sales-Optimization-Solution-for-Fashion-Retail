@@ -14,11 +14,6 @@ export default function Header() {
           className="bg-SecondaryColor rounded-md p-2 w-64 outline-none"
         />
         <FaBell className="text-DarkColor mr-4 cursor-pointer" />
-        <img
-          src="https://via.placeholder.com/40" // Replace with dynamic user profile picture
-          alt="Profile"
-          className="w-10 h-10 rounded-full"
-        />
       </div>
     </header>
   );
