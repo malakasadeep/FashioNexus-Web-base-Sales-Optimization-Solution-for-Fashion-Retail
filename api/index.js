@@ -22,11 +22,9 @@ import inventoryRouter from "./routes/inventory.routs.js";
 import promotionRouter from "./routes/promotion.routes.js";
 
 dotenv.config();
-const MONGODB_URL =
-  "mongodb+srv://pgmsadeep:1234@cluster0.phudmlq.mongodb.net/fashion?retryWrites=true&w=majority";
 
 mongoose
-  .connect(MONGODB_URL)
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Connected to Mongo DB successfully!!!");
   })
