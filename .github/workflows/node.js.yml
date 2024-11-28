@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: |
+          cd api
           touch .env
           echo "${{ secrets.MONGODB_URL }}" > .env
           echo "${{ secrets.JWT_SECRET }}" > .env
