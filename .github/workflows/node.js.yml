@@ -31,4 +31,4 @@ jobs:
           touch .env
           echo "${{ secrets.MONGODB_URL }}" > .env
           echo "${{ secrets.JWT_SECRET }}" > .env
-      - run: pm2 restart BackendAPI
+      - run: pm2 restart api
