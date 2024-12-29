@@ -43,7 +43,13 @@ app.get("/", (req, res) => {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://fashio-nexus.vercel.app/"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000!!!");
