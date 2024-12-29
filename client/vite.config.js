@@ -11,5 +11,16 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    proxy: {
+      "/api": {
+        target: "http://16.171.225.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace("/api", ""),
+      },
+    },
+  },
+
   plugins: [react()],
 });

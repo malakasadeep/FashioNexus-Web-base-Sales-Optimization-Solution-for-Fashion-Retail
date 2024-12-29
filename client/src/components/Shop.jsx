@@ -53,15 +53,11 @@ export default function Shop() {
   const fetchItemsWithOffers = async () => {
     try {
       setLoading(true);
-      const inventoryResponse = await fetch(
-        "http://16.171.225.212/api/inventories/all-offers"
-      );
+      const inventoryResponse = await fetch("/api/inventories/all-offers");
       const inventoryItems = await inventoryResponse.json();
 
       const itemsWithOfferPromises = inventoryItems.map(async (item) => {
-        const offerResponse = await fetch(
-          `http://16.171.225.212/api/promotions/offers/${item._id}`
-        );
+        const offerResponse = await fetch(`/api/promotions/offers/${item._id}`);
         const offerDetails = await offerResponse.json();
         return { ...item, offers: offerDetails };
       });
