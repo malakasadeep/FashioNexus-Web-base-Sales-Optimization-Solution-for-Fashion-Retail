@@ -44,7 +44,7 @@ function UpdateInventory({ currentUser }) {
     const fetchInventory = async () => {
       // setLoading(true);
       try {
-        const res = await fetch(`http://localhost:3000/api/inventories/${id}`);
+        const res = await fetch(`/api/inventories/${id}`);
         const data = await res.json();
         setFormData(data);
       } catch (error) {

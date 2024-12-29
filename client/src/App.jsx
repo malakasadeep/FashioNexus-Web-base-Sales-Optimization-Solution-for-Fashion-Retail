@@ -12,15 +12,12 @@ import Profile from "./pages/Profile";
 import PrivateCus from "./components/private/PrivateCus";
 
 //dewni
-import CreateInventory from "./pages/inventory/CreateInventory";
-import InventoryTable from "./components/inventory/InventoryTable";
+
 import UpdateInventory from "./pages/inventory/UpdateInventory";
 import DeleteInventory from "./pages/inventory/DeleteInventory";
 
 //Shadini
 import AddOffer from "./components/discount&offer/AddOffer";
-import UpdateOffer from "./components/discount&offer/UpdateOffer";
-import DeleteOffer from "./components/discount&offer/deleteOffer";
 
 export default function App() {
   return (

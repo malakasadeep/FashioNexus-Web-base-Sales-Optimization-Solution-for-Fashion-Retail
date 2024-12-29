@@ -31,9 +31,7 @@ function InventoryTable() {
       setLoading(true);
       const searchQuery = urlParams.toString();
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/inventories/search/get?${searchQuery}`
-        );
+        const res = await fetch(`/api/inventories/search/get?${searchQuery}`);
         const data = await res.json();
         setInventories(data);
       } catch (error) {
