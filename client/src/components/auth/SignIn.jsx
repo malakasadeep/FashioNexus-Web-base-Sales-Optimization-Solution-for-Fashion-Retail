@@ -9,6 +9,7 @@ import {
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEnvelope, FaLock, FaTimes, FaGoogle } from "react-icons/fa";
+import OAuth from "./OAuth";
 
 export default function SignIn({ onClose, onSignUp }) {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -170,14 +171,7 @@ export default function SignIn({ onClose, onSignUp }) {
             <span className="border-b w-1/5 lg:w-1/4"></span>
           </div>
 
-          <motion.button
-            className="w-full mt-4 py-2 px-4 bg-red-600 text-white rounded-md font-semibold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center justify-center"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaGoogle className="mr-2" />
-            Sign In with Google
-          </motion.button>
+          <OAuth />
 
           <p className="mt-6 text-sm text-center text-gray-600">
             Don't have an account?{" "}
