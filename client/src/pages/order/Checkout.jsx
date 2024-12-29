@@ -177,10 +177,7 @@ const Checkout = () => {
     try {
       console.log(orderData.items);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/order/add",
-        orderData
-      ); // Ensure the URL is correct
+      const response = await axios.post("/api/order/add", orderData); // Ensure the URL is correct
       localStorage.removeItem("cart");
       //   generateBill({
       //     ...orderData,

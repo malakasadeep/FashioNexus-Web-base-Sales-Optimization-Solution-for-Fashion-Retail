@@ -51,7 +51,7 @@ const FashionItem = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:3000/api/inventories/search/get?limit=4` // Limiting the results
+          `/api/inventories/search/get?limit=4` // Limiting the results
         );
         const data = await res.json();
         setInventories(data);
