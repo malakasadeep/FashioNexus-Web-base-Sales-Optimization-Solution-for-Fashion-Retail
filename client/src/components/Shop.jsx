@@ -93,7 +93,7 @@ export default function Shop() {
       {/* Heading Section */}
       <div className="mb-8">
         <h1 className="font-bold text-4xl text-center text-[#a98467]">
-          Special Offers And Discounts
+          Special Offers And Discounts For You
         </h1>
       </div>
 
