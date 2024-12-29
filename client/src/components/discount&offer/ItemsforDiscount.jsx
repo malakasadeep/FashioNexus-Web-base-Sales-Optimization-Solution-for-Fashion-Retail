@@ -17,9 +17,7 @@ export default function ItemsforDiscount() {
     const fetchInventories = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/inventories/search/get`
-        );
+        const res = await fetch(`/api/inventories/search/get`);
         const data = await res.json();
         setInventories(data);
         setFilteredInventories(data); // Set initial filtered data

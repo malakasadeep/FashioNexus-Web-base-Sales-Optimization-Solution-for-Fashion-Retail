@@ -111,7 +111,7 @@ export default function AddOffer() {
       return;
     }
 
-    const response = await fetch("http://localhost:3000/api/promotions", {
+    const response = await fetch("/api/promotions", {
       method: "POST",
       body: JSON.stringify({
         ...formData,

@@ -35,7 +35,7 @@ export default function UpdateOffer() {
   useEffect(() => {
     const fetchOffer = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/promotions/${id}`);
+        const res = await fetch(`/api/promotions/${id}`);
         const data = await res.json();
         if (!res.ok) {
           throw new Error(data.error || "Failed to fetch offer details");

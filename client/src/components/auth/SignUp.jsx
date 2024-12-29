@@ -49,7 +49,7 @@ export default function SignUp({ onClose, onSignIn }) {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/api/auth/sendotp", {
+      const response = await fetch("/api/auth/sendotp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -79,7 +79,7 @@ export default function SignUp({ onClose, onSignIn }) {
   const handleVerifyOtp = async (otp) => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/auth/verifyotp", {
+      const res = await fetch("/api/auth/verifyotp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, otp }),

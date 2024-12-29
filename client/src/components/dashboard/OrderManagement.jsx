@@ -63,7 +63,7 @@ export default function OrderManagement() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await axios.get("http://localhost:3000/api/order/get");
+        const data = await axios.get("/api/order/get");
         setOrders(data.data);
 
         const allDates = data.data.map((ord) => ord.createdAt.split("T")[0]);
@@ -169,10 +169,9 @@ export default function OrderManagement() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.put(
-            `http://localhost:3000/api/order/status/${id}`,
-            { status: newStatus }
-          );
+          const response = await axios.put(`/api/order/status/${id}`, {
+            status: newStatus,
+          });
 
           await send("service_fjpvjh9", "template_1x528d6", {
             to_email: order.customerInfo.email,
