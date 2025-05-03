@@ -46,8 +46,8 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: ["https://fashio-nexus.vercel.app/", "http://localhost:5173"],
-    methods: ["GET", "POST"],
-    credentials: true,
+    methods: "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+    credentials: true, 
   })
 );
 
