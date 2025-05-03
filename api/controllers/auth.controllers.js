@@ -46,7 +46,7 @@ export const signin = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true })
       .status(200)
-      .json( success: true, token, user: rest);
+      .json( ...rest, token);
   } catch (error) {
     console.error("Sign-in error:", error); // Debugging
     next(error);
@@ -62,7 +62,7 @@ export const google = async (req, res, next) => {
       res
         .cookie("access_token", token, { httpOnly: true })
         .status(200)
-        .json(rest);
+        .json(...rest, token);
     } else {
       const generatedPassword =
         Math.random().toString(36).slice(-8) +
@@ -83,7 +83,7 @@ export const google = async (req, res, next) => {
       res
         .cookie("access_token", token, { httpOnly: true })
         .status(200)
-        .json( success: true, token, user: rest);
+        .json(...rest, token);
     }
   } catch (error) {
     next(error);
