@@ -46,7 +46,7 @@ export const signin = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true })
       .status(200)
-      .json(token, rest);
+      .json( success: true, token, user: rest);
   } catch (error) {
     console.error("Sign-in error:", error); // Debugging
     next(error);
@@ -83,7 +83,7 @@ export const google = async (req, res, next) => {
       res
         .cookie("access_token", token, { httpOnly: true })
         .status(200)
-        .json(token,rest);
+        .json( success: true, token, user: rest);
     }
   } catch (error) {
     next(error);
